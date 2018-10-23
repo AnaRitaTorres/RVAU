@@ -1,24 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Movement : MonoBehaviour {
 
 	public GameObject character;
-	Rigidbody characterRigidBody; 
 	
-	public float speed = 10f;
-	float directionX;
-
+	public Button leftButton, rightButton;
+	
 	void Start () {
-		characterRigidBody = character.AddComponent<Rigidbody>();
-		characterRigidBody.mass = 5;
+		leftButton.onClick.AddListener(MoveLeft);
+		rightButton.onClick.AddListener(MoveRight);
 	}
 	
-	void Update () {
-		
-	
-		
-		
+	void MoveLeft() {
+		character.transform.Translate(Vector3.left * Time.deltaTime);
+
+	}
+
+	void MoveRight() {
+		character.transform.Translate(Vector3.right * Time.deltaTime);
 	}
 }
