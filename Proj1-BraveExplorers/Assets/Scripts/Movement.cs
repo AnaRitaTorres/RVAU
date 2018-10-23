@@ -6,12 +6,13 @@ using UnityEngine.UI;
 public class Movement : MonoBehaviour {
 
 	public GameObject character;
-	
-	public Button leftButton, rightButton;
+	public float speed = 100;
+	public Button leftButton, rightButton, jumpButton;
 	
 	void Start () {
 		leftButton.onClick.AddListener(MoveLeft);
 		rightButton.onClick.AddListener(MoveRight);
+		jumpButton.onClick.AddListener(Jump);
 	}
 	
 	void MoveLeft() {
@@ -21,5 +22,9 @@ public class Movement : MonoBehaviour {
 
 	void MoveRight() {
 		character.transform.Translate(Vector3.right * Time.deltaTime);
+	}
+
+	void Jump() {
+		character.transform.Translate(Vector3.up * speed * Time.deltaTime);
 	}
 }
