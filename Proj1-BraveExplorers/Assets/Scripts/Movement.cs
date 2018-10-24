@@ -6,10 +6,12 @@ using UnityEngine.UI;
 public class Movement : MonoBehaviour {
 
 	public GameObject character;
-	public float speed = 100;
 	public Button leftButton, rightButton, jumpButton;
-	
+	bool grounded;
+			
 	void Start () {
+		
+		grounded = true;
 		leftButton.onClick.AddListener(MoveLeft);
 		rightButton.onClick.AddListener(MoveRight);
 		jumpButton.onClick.AddListener(Jump);
@@ -25,6 +27,15 @@ public class Movement : MonoBehaviour {
 	}
 
 	void Jump() {
-		character.transform.Translate(Vector3.up * speed * Time.deltaTime);
+		
+		if(grounded) {
+			character.transform.Translate(Vector3.up * Time.deltaTime);
+			grounded = false;
+		}
+		else {
+		    character.transform.Translate(-Vector3.up * Time.deltaTime);
+			grounded = true;
+		}
+		
 	}
 }

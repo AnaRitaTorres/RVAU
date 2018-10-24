@@ -741,7 +741,7 @@ MonoBehaviour:
   speed: 50
   leftButton: {fileID: 501601512}
   rightButton: {fileID: 163607549}
-  jumpButton: {fileID: 0}
+  jumpButton: {fileID: 644984779}
 --- !u!1 &628189884
 GameObject:
   m_ObjectHideFlags: 0
