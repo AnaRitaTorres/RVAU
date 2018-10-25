@@ -27,9 +27,11 @@ public class Movement : MonoBehaviour {
 	}
 	
 	void MoveLeft() {
+		character.transform.Rotate(0,180,0);
+
 		if (mstatus == MoveStatus.Grounded){ 
 			mstatus = MoveStatus.MovingLeft;
-			currDirectionalSpeed = 0.1f; 
+			currDirectionalSpeed = -0.1f; 
 		}
 		else if (mstatus == MoveStatus.MovingLeft) {
 			mstatus = MoveStatus.Grounded;
