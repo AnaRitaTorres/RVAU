@@ -31,7 +31,7 @@ public class Movement : MonoBehaviour {
 		if (mstatus == MoveStatus.Grounded){
 			character.transform.Rotate(Vector3.up * 180, Space.Self); 
 			mstatus = MoveStatus.MovingLeft;
-			currDirectionalSpeed = 0.1f; 
+			currDirectionalSpeed = 30f; 
 		}
 		else if (mstatus == MoveStatus.MovingLeft) {
 			character.transform.Rotate(Vector3.up * -180, Space.Self); 
@@ -43,7 +43,7 @@ public class Movement : MonoBehaviour {
 	void MoveRight() {
 		if (mstatus == MoveStatus.Grounded){ 
 			mstatus = MoveStatus.MovingRight;
-			currDirectionalSpeed = 0.1f; 
+			currDirectionalSpeed = 30f; 
 		}
 		else if (mstatus == MoveStatus.MovingRight) {
 			mstatus = MoveStatus.Grounded;
@@ -65,12 +65,12 @@ public class Movement : MonoBehaviour {
 		if (jstatus != JumpStatus.Grounded) {
 			if (jstatus == JumpStatus.GoingUp) {
 				currTime += Time.deltaTime;
-				currJumpSpeed = 0.18f;
+				currJumpSpeed = 20f;
 				character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
 			}
 			else {
 				currTime += Time.deltaTime;
-				currJumpSpeed = -0.18f;
+				currJumpSpeed = -20f;
 				character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
 			}
 		}
