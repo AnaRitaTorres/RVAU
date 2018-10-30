@@ -22,7 +22,10 @@ public class LockObjects : MonoBehaviour {
 		// TODO
 		var newChaise = Instantiate(chaiseLong, chaiseLong.transform.position, chaiseLong.transform.rotation);
 		newChaise.transform.parent = camera.transform;
-		newChaise.transform.position = new Vector3(newChaise.transform.position.x, newChaise.transform.position.y, 0.0f);
+		newChaise.transform.localPosition = new Vector3(newChaise.transform.position.x, -newChaise.transform.position.y, 0.0f);
+		newChaise.transform.localScale =  new Vector3(5, 5, 5);
+		
+		
 	}
 
 	// Update is called once per frame
