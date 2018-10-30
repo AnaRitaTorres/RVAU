@@ -11,6 +11,7 @@ public class LockObjects : MonoBehaviour {
 	public GameObject basketball;
 	public GameObject books;
 	public GameObject camera;
+	//public GameObject blue;
 	
 	void Start () {
 		lockButton.onClick.AddListener(LockInPlace);	
