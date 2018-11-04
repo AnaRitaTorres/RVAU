@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,9 +7,7 @@ using Vuforia;
 public class LockObjects : MonoBehaviour {
 
 	public Button lockButton;
-	public GameObject chaiseLong;
-	public GameObject basketball;
-	public GameObject books;
+	public GameObject gameObject;
 	public Camera secondCamera;
 	
 	void Start () {
@@ -20,18 +18,8 @@ public class LockObjects : MonoBehaviour {
 
 	public string IdentifyTag() {
 
-		var object_tag1 = GameObject.FindWithTag("Chaise").name;
-		var object_tag2 = GameObject.FindWithTag("Book").name;
-		var object_tag3 = GameObject.FindWithTag("Basketball").name;
-		
-		if (object_tag1 != null)
-			return object_tag1;
-		else if(object_tag2 != null)
-			return object_tag2;
-		else if(object_tag3 != null)
-			return object_tag3;
-		else
-			return null;
+		Debug.Log(gameObject.tag);
+		return null;
 		
 	}
 
@@ -55,12 +43,12 @@ public class LockObjects : MonoBehaviour {
 														obj.transform.localScale.y * obj.transform.parent.transform.localScale.y * (1 + 2*Mathf.Abs(delta)/800),
 														obj.transform.localScale.z * obj.transform.parent.transform.localScale.z * (1 + 2*Mathf.Abs(delta)/800));
 		container.transform.localPosition = new Vector3(container.transform.localPosition.x + delta, container.transform.localPosition.y,0);
-		Destroy(obj);
+		//Destroy(obj);
 
 	}
 	void LockInPlace() {
-
-		string objectToPlace = IdentifyTag();
+		Debug.Log(gameObject.tag);
+		/* string objectToPlace = IdentifyTag();
 
 		switch (objectToPlace) {
 			case "ChaiseLong": {
@@ -75,7 +63,9 @@ public class LockObjects : MonoBehaviour {
 				LockObject(basketball);
 				break;
 			}
-		}
+		}*/
+
+		LockObject(gameObject);
 	}
 
 	// Update is called once per frame

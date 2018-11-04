@@ -21,7 +21,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
 
     protected TrackableBehaviour mTrackableBehaviour;
 
-    #endregion // PROTECTED_MEMBER_VARIABLES
+    #endregion 
 
     #region UNITY_MONOBEHAVIOUR_METHODS
 
