@@ -12,7 +12,6 @@ public class LockObjects : MonoBehaviour {
 	public GameObject books;
 	public Camera secondCamera;
 	
-		
 	void Start () {
 	
 		lockButton.onClick.AddListener(LockInPlace);
@@ -36,27 +35,47 @@ public class LockObjects : MonoBehaviour {
 		
 	}
 
-	
+	private void LockObject(GameObject obj) {
+		
+		var container = new GameObject(obj.transform.name + " Container");
+
+		container.transform.parent = secondCamera.transform;		
+		container.transform.localPosition = obj.transform.localPosition;
+		container.transform.position = obj.transform.position;
+		container.transform.localScale = new Vector3(1,1,1);
+
+		var delta = (Mathf.Abs(container.transform.localPosition.z) 
+					* Mathf.Abs(container.transform.localPosition.x) 
+					/ (800 - Mathf.Abs(container.transform.localPosition.z)));
+
+		if (container.transform.localPosition.x < 0) delta = -delta;
+
+		var newObject = Instantiate(obj, container.transform.position, obj.transform.rotation, container.transform);
+		newObject.transform.localScale =  new Vector3(	obj.transform.localScale.x * obj.transform.parent.transform.localScale.x * (1 + 2*Mathf.Abs(delta)/800),
+														obj.transform.localScale.y * obj.transform.parent.transform.localScale.y * (1 + 2*Mathf.Abs(delta)/800),
+														obj.transform.localScale.z * obj.transform.parent.transform.localScale.z * (1 + 2*Mathf.Abs(delta)/800));
+		container.transform.localPosition = new Vector3(container.transform.localPosition.x + delta, container.transform.localPosition.y,0);
+		Destroy(obj);
+
+	}
 	void LockInPlace() {
 
 		string objectToPlace = IdentifyTag();
-		Debug.Log(objectToPlace);
-		//after obtaining tracked object, permit only one lock of each kind
-		
-		var newChaise = Instantiate(chaiseLong, chaiseLong.transform.position, chaiseLong.transform.rotation);
-		newChaise.transform.parent = secondCamera.transform;
-		newChaise.transform.localScale =  new Vector3(5, 5, 5);
-		newChaise.transform.localPosition = new Vector3(newChaise.transform.position.x, 0.0f, -newChaise.transform.position.z);
-		
-		var newBasketball = Instantiate(basketball, basketball.transform.position, basketball.transform.rotation);
-		newBasketball.transform.parent = secondCamera.transform;
-		newBasketball.transform.localScale =  new Vector3(5, 5, 5);
-		newBasketball.transform.localPosition = new Vector3(newBasketball.transform.position.x, 0.0f, -newBasketball.transform.position.z);
 
-		var newBooks = Instantiate(books, books.transform.position, books.transform.rotation);
-		newBooks.transform.parent = secondCamera.transform;
-		newBooks.transform.localScale =  new Vector3(5, 5, 5);
-	 	newBooks.transform.localPosition = new Vector3(newBooks.transform.position.x, 0.0f, -newBooks.transform.position.z);
+		switch (objectToPlace) {
+			case "ChaiseLong": {
+				LockObject(chaiseLong);
+				break;
+			}
+			case "Book": {
+				LockObject(books);
+				break;
+			}
+			case "Basketball": {
+				LockObject(basketball);
+				break;
+			}
+		}
 	}
 
 	// Update is called once per frame
