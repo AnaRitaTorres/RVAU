@@ -13,19 +13,13 @@ public class LockObjects : MonoBehaviour {
 	void Start () {
 	
 		lockButton.onClick.AddListener(LockInPlace);
-
-	}
-
-	public string IdentifyTag() {
-
-		Debug.Log(gameObject.tag);
-		return null;
-		
 	}
 
 	private void LockObject(GameObject obj) {
 		
 		var container = new GameObject(obj.transform.name + " Container");
+
+		Debug.Log(container);
 
 		container.transform.parent = secondCamera.transform;		
 		container.transform.localPosition = obj.transform.localPosition;
@@ -43,33 +37,9 @@ public class LockObjects : MonoBehaviour {
 														obj.transform.localScale.y * obj.transform.parent.transform.localScale.y * (1 + 2*Mathf.Abs(delta)/800),
 														obj.transform.localScale.z * obj.transform.parent.transform.localScale.z * (1 + 2*Mathf.Abs(delta)/800));
 		container.transform.localPosition = new Vector3(container.transform.localPosition.x + delta, container.transform.localPosition.y,0);
-		//Destroy(obj);
-
 	}
 	void LockInPlace() {
-		Debug.Log(gameObject.tag);
-		/* string objectToPlace = IdentifyTag();
-
-		switch (objectToPlace) {
-			case "ChaiseLong": {
-				LockObject(chaiseLong);
-				break;
-			}
-			case "Book": {
-				LockObject(books);
-				break;
-			}
-			case "Basketball": {
-				LockObject(basketball);
-				break;
-			}
-		}*/
 
 		LockObject(gameObject);
-	}
-
-	// Update is called once per frame
-	void Update () {
-		
 	}
 }
