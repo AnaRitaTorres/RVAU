@@ -1301,8 +1301,6 @@ GameObject:
   - component: {fileID: 587136209}
   - component: {fileID: 587136208}
   - component: {fileID: 587136213}
-  - component: {fileID: 587136214}
-  - component: {fileID: 587136215}
   m_Layer: 0
   m_Name: ARCamera
   m_TagString: Untagged
@@ -1412,36 +1410,6 @@ MonoBehaviour:
   jumpButton: {fileID: 644984779}
   jstatus: 0
   mstatus: 0
---- !u!114 &587136214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 587136207}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c84e0b47aa958041aac1c7357374c36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lockButton: {fileID: 149041256}
-  gameObject: {fileID: 0}
-  secondCamera: {fileID: 1547300474}
---- !u!114 &587136215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 587136207}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52a444b7cc9a824b915f301825d32dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lockButton: {fileID: 149041256}
-  chaiseLong: {fileID: 1427238962}
-  basketball: {fileID: 438108656}
-  books: {fileID: 516579091}
-  secondCamera: {fileID: 1547300474}
 --- !u!1 &628189884
 GameObject:
   m_ObjectHideFlags: 0
