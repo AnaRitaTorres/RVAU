@@ -4,40 +4,43 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vuforia;
 
-public class LockObjects : MonoBehaviour, ITrackableEventHandler {
+public class LockObjects : MonoBehaviour {
 
 	public Button lockButton;
 	public GameObject chaiseLong;
 	public GameObject basketball;
 	public GameObject books;
 	public Camera secondCamera;
-	private TrackableBehaviour mTrackableBehaviour;
+	
 		
 	void Start () {
+	
+		lockButton.onClick.AddListener(LockInPlace);
 
-		mTrackableBehaviour = GetComponent<TrackableBehaviour>();
-        if(mTrackableBehaviour) {
-            mTrackableBehaviour.RegisterTrackableEventHandler(this);
-        }
-
-		lockButton.onClick.AddListener(LockInPlace);	
 	}
 
-	public void OnTrackableStateChanged(TrackableBehaviour.Status previousStatus, TrackableBehaviour.Status newStatus) {
-			//still need to touch up this function, not even being called
-		if (newStatus == TrackableBehaviour.Status.DETECTED || newStatus == TrackableBehaviour.Status.TRACKED || newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED) {
-			
-			//save name/id of marker and save it in variable 
-			Debug.Log("Detetou Cenas");
-		}
-		else {
-			Debug.Log("mehhh");
-		}
-        
+	public string IdentifyTag() {
+
+		var object_tag1 = GameObject.FindWithTag("Chaise").name;
+		var object_tag2 = GameObject.FindWithTag("Book").name;
+		var object_tag3 = GameObject.FindWithTag("Basketball").name;
+		
+		if (object_tag1 != null)
+			return object_tag1;
+		else if(object_tag2 != null)
+			return object_tag2;
+		else if(object_tag3 != null)
+			return object_tag3;
+		else
+			return null;
+		
 	}
+
 	
 	void LockInPlace() {
 
+		string objectToPlace = IdentifyTag();
+		Debug.Log(objectToPlace);
 		//after obtaining tracked object, permit only one lock of each kind
 		
 		var newChaise = Instantiate(chaiseLong, chaiseLong.transform.position, chaiseLong.transform.rotation);
