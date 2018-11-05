@@ -7,13 +7,25 @@ using Vuforia;
 public class LockObjects : MonoBehaviour {
 
 	public Button lockButton;
+	public Button undoButton;
 	public GameObject chaiseLong;
 	public GameObject books;
 	public GameObject basketball;
 	public Camera secondCamera;
+	public List<Move> moves;
 
-	void Start () {
+	public class Move {
+		public GameObject obj;
+
+		public Move(GameObject objct){
+			obj = objct;
+		}
+	}
+
+	void Start () { 
+		moves = new List<Move>();
 		lockButton.onClick.AddListener(LockInPlace);
+		undoButton.onClick.AddListener(UndoMove);
 	}
 
 	private void LockObject(GameObject obj) {
@@ -36,6 +48,17 @@ public class LockObjects : MonoBehaviour {
 														obj.transform.localScale.y * obj.transform.parent.transform.localScale.y * (1 + 2*Mathf.Abs(delta)/800),
 														obj.transform.localScale.z * obj.transform.parent.transform.localScale.z * (1 + 2*Mathf.Abs(delta)/800));
 		container.transform.localPosition = new Vector3(container.transform.localPosition.x + delta, container.transform.localPosition.y,0);
+
+		moves.Add(new Move(container));
+
+	}
+
+	private void UndoMove(){
+		if (moves.Count != 0){
+			var obj = moves[moves.Count - 1].obj;
+			Destroy(obj);
+			moves.RemoveAt(moves.Count - 1);
+		}
 	}
 
 	void checkForLock(string objName, GameObject obj){
