@@ -7,19 +7,18 @@ using Vuforia;
 public class LockObjects : MonoBehaviour {
 
 	public Button lockButton;
-	public GameObject gameObject;
+	public GameObject chaiseLong;
+	public GameObject books;
+	public GameObject basketball;
 	public Camera secondCamera;
-	
+
 	void Start () {
-	
 		lockButton.onClick.AddListener(LockInPlace);
 	}
 
 	private void LockObject(GameObject obj) {
-		
-		var container = new GameObject(obj.transform.name + " Container");
 
-		Debug.Log(container);
+		var container = new GameObject(obj.transform.name + " Container");
 
 		container.transform.parent = secondCamera.transform;		
 		container.transform.localPosition = obj.transform.localPosition;
@@ -38,8 +37,17 @@ public class LockObjects : MonoBehaviour {
 														obj.transform.localScale.z * obj.transform.parent.transform.localScale.z * (1 + 2*Mathf.Abs(delta)/800));
 		container.transform.localPosition = new Vector3(container.transform.localPosition.x + delta, container.transform.localPosition.y,0);
 	}
-	void LockInPlace() {
 
-		LockObject(gameObject);
+	void checkForLock(string objName, GameObject obj){
+		if (GameObject.Find(obj.transform.name + " Container") != null) return;
+		if (GameObject.Find(objName).GetComponent<Renderer>().isVisible){
+			LockObject(obj);
+		}
+	}
+
+	void LockInPlace() {
+		checkForLock("ChaiseLong", chaiseLong);
+		checkForLock("Basketball", basketball);
+		checkForLock("book", books);
 	}
 }
