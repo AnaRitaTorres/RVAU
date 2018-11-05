@@ -1549,6 +1549,7 @@ GameObject:
   - component: {fileID: 587136208}
   - component: {fileID: 587136213}
   - component: {fileID: 587136214}
+  - component: {fileID: 587136215}
   m_Layer: 0
   m_Name: ARCamera
   m_TagString: Untagged
@@ -1675,6 +1676,28 @@ MonoBehaviour:
   books: {fileID: 1951475785}
   basketball: {fileID: 438108656}
   secondCamera: {fileID: 1547300474}
+--- !u!114 &587136215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 587136207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc81b6c29bf3e9b4896536f747446ea5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startButton: {fileID: 855318945}
+  status: 0
+  leftButton: {fileID: 501601510}
+  rightButton: {fileID: 163607547}
+  pauseButton: {fileID: 985396396}
+  jumpButton: {fileID: 644984777}
+  undoButton: {fileID: 1271301884}
+  lockButton: {fileID: 149041254}
+  blue: {fileID: 865997197}
+  timer: {fileID: 2010683067}
+  objects: []
 --- !u!1 &628189884
 GameObject:
   m_ObjectHideFlags: 0
