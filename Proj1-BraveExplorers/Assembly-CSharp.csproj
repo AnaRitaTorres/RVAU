@@ -55,6 +55,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\CheckTracked.cs" />
      <Compile Include="Assets\Scripts\EndLevel.cs" />
+     <Compile Include="Assets\Scripts\HoldButton.cs" />
      <Compile Include="Assets\Scripts\LoadGame.cs" />
      <Compile Include="Assets\Scripts\LockObjects.cs" />
      <Compile Include="Assets\Scripts\Movement.cs" />

@@ -9,7 +9,7 @@ public class Movement : MonoBehaviour {
 	public enum MoveStatus {Grounded, MovingLeft, MovingRight};
 
 	public GameObject character;
-	public Button leftButton, rightButton, jumpButton;
+	public Button jumpButton;
 	public JumpStatus jstatus = JumpStatus.Grounded;
 	public MoveStatus mstatus = MoveStatus.Grounded;
 
@@ -21,31 +21,29 @@ public class Movement : MonoBehaviour {
 	void Start () {
 		jstatus = JumpStatus.Grounded;
 		mstatus = MoveStatus.Grounded;
-		leftButton.onClick.AddListener(MoveLeft);
-		rightButton.onClick.AddListener(MoveRight);
 		jumpButton.onClick.AddListener(Jump);
 	}
 	
-	void MoveLeft() {
+	public void MoveLeft(bool pressed) {
 		
-		if (mstatus == MoveStatus.Grounded){
+		if (mstatus == MoveStatus.Grounded && pressed){
 			character.transform.Rotate(Vector3.up * 180, Space.Self); 
 			mstatus = MoveStatus.MovingLeft;
 			currDirectionalSpeed = 30f; 
 		}
-		else if (mstatus == MoveStatus.MovingLeft) {
+		else if (mstatus == MoveStatus.MovingLeft && !pressed) {
 			character.transform.Rotate(Vector3.up * -180, Space.Self); 
 			mstatus = MoveStatus.Grounded;
 			currDirectionalSpeed = 0.0f;
 		}
 	}
 
-	void MoveRight() {
-		if (mstatus == MoveStatus.Grounded){ 
+	public void MoveRight(bool pressed) {
+		if (mstatus == MoveStatus.Grounded && pressed){ 
 			mstatus = MoveStatus.MovingRight;
 			currDirectionalSpeed = 30f; 
 		}
-		else if (mstatus == MoveStatus.MovingRight) {
+		else if (mstatus == MoveStatus.MovingRight && !pressed) {
 			mstatus = MoveStatus.Grounded;
 			currDirectionalSpeed = 0.0f;
 		}
@@ -65,7 +63,7 @@ public class Movement : MonoBehaviour {
 		if (jstatus != JumpStatus.Grounded) {
 			if (jstatus == JumpStatus.GoingUp) {
 				currTime += Time.deltaTime;
-				currJumpSpeed = 20f;
+				currJumpSpeed = 35f;
 				character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
 			}
 			else {
