@@ -9,6 +9,7 @@ public class Play : MonoBehaviour {
 	public Button startButton;
 	public Button quitButton;
 	public Button okButton;
+	public Button deathOkButton;
 	public Status status;
 	public Timer time;
 	public GameObject readyButton;
@@ -22,6 +23,7 @@ public class Play : MonoBehaviour {
 	public GameObject timer;
 	public GameObject gameEnd;
 	public GameObject exitWarning;
+	public GameObject deathWindow;
 
 	public Text endText;
 
@@ -31,6 +33,7 @@ public class Play : MonoBehaviour {
 		status = Status.Placing;
 		startButton.onClick.AddListener(StartGame);
 		quitButton.onClick.AddListener(time.Quit);
+		deathOkButton.onClick.AddListener(time.Quit);
 		okButton.onClick.AddListener(Ok);
 
 		leftButton.SetActive(false);
@@ -41,6 +44,7 @@ public class Play : MonoBehaviour {
 		timer.SetActive(false);
 		gameEnd.SetActive(false);
 		exitWarning.SetActive(false);
+		deathWindow.SetActive(false);
 
 	}
 
@@ -85,6 +89,10 @@ public class Play : MonoBehaviour {
 
 	public void Ok(){
 		exitWarning.SetActive(false);
+	}
+
+	public void Die(){
+		deathWindow.SetActive(true);
 	}
 
 }
