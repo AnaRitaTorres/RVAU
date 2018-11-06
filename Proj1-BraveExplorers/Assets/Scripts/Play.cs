@@ -25,11 +25,19 @@ public class Play : MonoBehaviour {
 	public GameObject exitWarning;
 	public GameObject deathWindow;
 
+	public GameObject chaiseLong;
+	public GameObject books;
+	public GameObject trap;
+	public GameObject basketball;
+	public GameObject exit;
+
 	public Text endText;
 
 	// Use this for initialization
 	void Start () {
 		
+		toggleOriginals(true);
+
 		status = Status.Placing;
 		startButton.onClick.AddListener(StartGame);
 		quitButton.onClick.AddListener(time.Quit);
@@ -54,6 +62,8 @@ public class Play : MonoBehaviour {
 			exitWarning.SetActive(true);
 			return;
 		}
+
+		toggleOriginals(false);
 
 		this.status = Status.Playing;
 
@@ -93,6 +103,14 @@ public class Play : MonoBehaviour {
 
 	public void Die(){
 		deathWindow.SetActive(true);
+	}
+
+	void toggleOriginals(bool val){
+		chaiseLong.SetActive(val);
+		books.SetActive(val);
+		trap.SetActive(val);
+		basketball.SetActive(val);
+		exit.SetActive(val);
 	}
 
 }

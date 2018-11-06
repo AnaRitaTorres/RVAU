@@ -2131,6 +2131,11 @@ MonoBehaviour:
   gameEnd: {fileID: 610936886}
   exitWarning: {fileID: 1708703598}
   deathWindow: {fileID: 976220271}
+  chaiseLong: {fileID: 813473717}
+  books: {fileID: 1951475785}
+  trap: {fileID: 712680572}
+  basketball: {fileID: 438108656}
+  exit: {fileID: 1272971259}
   endText: {fileID: 1276506014}
 --- !u!114 &587136216
 MonoBehaviour:
@@ -6650,7 +6655,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400026, guid: 73d771a3ad9e21b4b8f9d7ae05370069, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -187
       objectReference: {fileID: 0}
     - target: {fileID: 400026, guid: 73d771a3ad9e21b4b8f9d7ae05370069, type: 3}
       propertyPath: m_LocalPosition.z
