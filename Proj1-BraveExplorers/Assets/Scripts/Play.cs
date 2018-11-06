@@ -9,6 +9,8 @@ public class Play : MonoBehaviour {
 	public Button startButton;
 	public Status status;
 
+	public Timer time;
+
 	public GameObject readyButton;
 	public GameObject leftButton;
 	public GameObject rightButton;
@@ -46,6 +48,12 @@ public class Play : MonoBehaviour {
 		undoButton.SetActive(false);
 		readyButton.SetActive(false);
 		lockButton.SetActive(false);
-		
+
+		time.StartTimer();		
 	}
+
+	public void EndLevel(){
+		Debug.Log(time.EndTimer());
+	}
+
 }

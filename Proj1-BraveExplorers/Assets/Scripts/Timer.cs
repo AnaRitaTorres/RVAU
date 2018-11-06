@@ -20,19 +20,26 @@ public class Timer : MonoBehaviour {
 	void Start() {
 		backgroundWindow.SetActive(false);
 		dialogWindow.SetActive(false);
-		startTime = Time.time;
 		pauseButton.onClick.AddListener(Pause);
 		continueButton.onClick.AddListener(Continue);
 		quitButton.onClick.AddListener(Quit);
+	}
+
+	public void StartTimer(){
+		startTime = Time.time;
+	}
+
+	public string EndTimer(){
+		return "Finished within " + timerText.text;
 	}
 	
 	void Update() {
 
 		if(!pause) {
 			t = Time.time - startTime;
-			string minutes = ((int) t/60).ToString("f1");
+			string minutes = ((int) (t/60)).ToString("f1");
 			string seconds = (t % 60).ToString("f1");
-			timerText.text = "00:" + minutes + ":" + seconds;
+			timerText.text = minutes + ":" + seconds;
 		}
 	}
 
@@ -62,7 +69,6 @@ public class Timer : MonoBehaviour {
 	}
 
 	void Quit() {
-		Debug.Log("Outtt");
 		Application.Quit();
 	}
 }
