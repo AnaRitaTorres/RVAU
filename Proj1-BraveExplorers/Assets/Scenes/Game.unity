@@ -2025,6 +2025,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 855318945}
+  quitButton: {fileID: 173132520}
   status: 0
   time: {fileID: 862939505}
   readyButton: {fileID: 855318943}
@@ -2036,6 +2037,7 @@ MonoBehaviour:
   lockButton: {fileID: 149041254}
   blue: {fileID: 865997197}
   timer: {fileID: 2010683067}
+  gameEnd: {fileID: 610936886}
   endText: {fileID: 1276506014}
 --- !u!1 &610936886
 GameObject:
@@ -2061,7 +2063,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 610936886}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -233}
+  m_LocalPosition: {x: 0, y: 0, z: -101}
   m_LocalScale: {x: 1.0000153, y: 1.0000153, z: 1.0000153}
   m_Children:
   - {fileID: 1066023666}
@@ -4426,7 +4428,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 7, y: -21}
+  m_AnchoredPosition: {x: 7, y: 28}
   m_SizeDelta: {x: 300, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1276506014

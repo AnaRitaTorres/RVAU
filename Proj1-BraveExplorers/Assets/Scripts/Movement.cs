@@ -17,6 +17,11 @@ public class Movement : MonoBehaviour {
 	float currTime = 0.0f;
 	float currJumpSpeed = 0.0f;
 	float currDirectionalSpeed = 0.0f;
+
+	float savedMSpeed = 0.0f;
+	float savedJSpeed = 0.0f;
+	float savedJTime = 0.0f;
+	bool paused = false;
 			
 	void Start () {
 		jstatus = JumpStatus.Grounded;
@@ -56,20 +61,48 @@ public class Movement : MonoBehaviour {
 		}
 	}
 
+	public void PauseMovement(){
+		savedMSpeed = currDirectionalSpeed;
+		savedJSpeed = currJumpSpeed;
+		savedJTime = currTime;
+
+		currTime = 0.0f;
+		currDirectionalSpeed = 0.0f;
+		currJumpSpeed = 0.0f;
+		
+		paused = true;
+
+		character.GetComponent<Rigidbody>().isKinematic = true;
+	}
+
+	public void ResumeMovement(){
+		currDirectionalSpeed = savedMSpeed;
+		currJumpSpeed = savedJSpeed;
+		currTime = savedJTime;
+
+		paused = false;
+
+		character.GetComponent<Rigidbody>().isKinematic = false;
+	}
+
 	void Update() {
 
 		// Jumping behaviour
-
+		Debug.Log(currJumpSpeed);
 		if (jstatus != JumpStatus.Grounded) {
 			if (jstatus == JumpStatus.GoingUp) {
-				currTime += Time.deltaTime;
-				currJumpSpeed = 35f;
-				character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
+				if (!paused) {
+					currTime += Time.deltaTime;
+					currJumpSpeed = 35f;
+					character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
+				}
 			}
 			else {
-				currTime += Time.deltaTime;
-				currJumpSpeed = -20f;
-				character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
+				if (!paused){
+					currTime += Time.deltaTime;
+					currJumpSpeed = -20f;
+					character.transform.Translate(Vector3.up * currJumpSpeed * Time.deltaTime);
+				}
 			}
 		}
 		if (currTime >= jumpTime / 2 && currTime < jumpTime && jstatus != JumpStatus.GoingDown) {

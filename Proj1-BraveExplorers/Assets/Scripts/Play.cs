@@ -7,10 +7,9 @@ public class Play : MonoBehaviour {
 
 	public enum Status {Placing, Playing};
 	public Button startButton;
+	public Button quitButton;
 	public Status status;
-
 	public Timer time;
-
 	public GameObject readyButton;
 	public GameObject leftButton;
 	public GameObject rightButton;
@@ -20,13 +19,16 @@ public class Play : MonoBehaviour {
 	public GameObject lockButton;
 	public GameObject blue;
 	public GameObject timer;
+	public GameObject gameEnd;
 
 	public Text endText;
 
 	// Use this for initialization
 	void Start () {
+		
 		status = Status.Placing;
 		startButton.onClick.AddListener(StartGame);
+		quitButton.onClick.AddListener(time.Quit);
 
 		leftButton.SetActive(false);
 		rightButton.SetActive(false);
@@ -34,6 +36,7 @@ public class Play : MonoBehaviour {
 		pauseButton.SetActive(false);
 		blue.SetActive(false);
 		timer.SetActive(false);
+		gameEnd.SetActive(false);
 
 	}
 
@@ -56,6 +59,13 @@ public class Play : MonoBehaviour {
 
 	public void EndLevel(){
 		endText.text = time.EndTimer();
+		timer.SetActive(false);
+		blue.SetActive(false);
+		pauseButton.SetActive(false);
+		leftButton.SetActive(false);
+		rightButton.SetActive(false);
+		jumpButton.SetActive(false);
+		gameEnd.SetActive(true);
 	}
 
 }

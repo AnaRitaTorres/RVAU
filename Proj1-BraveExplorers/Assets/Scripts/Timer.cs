@@ -12,6 +12,7 @@ public class Timer : MonoBehaviour {
 	public Button quitButton;
 	public GameObject backgroundWindow;
 	public GameObject dialogWindow;
+	public Movement move;
 	private float startTime;
 	private bool pause = false;
 	private bool menu = false;
@@ -56,6 +57,7 @@ public class Timer : MonoBehaviour {
 			backgroundWindow.SetActive(true);
 			dialogWindow.SetActive(true);
 			menu = true;
+			move.PauseMovement();
 		}
 	}
 
@@ -66,6 +68,7 @@ public class Timer : MonoBehaviour {
 			pause = false;
 			pausedAt = Time.time;
 			menu = false;
+			move.ResumeMovement();
 		}
 	}
 
