@@ -11,6 +11,8 @@ public class LockObjects : MonoBehaviour {
 	public GameObject chaiseLong;
 	public GameObject books;
 	public GameObject basketball;
+	public GameObject exit;
+	public GameObject trap;
 	public Camera secondCamera;
 	public List<Move> moves;
 
@@ -72,5 +74,7 @@ public class LockObjects : MonoBehaviour {
 		checkForLock("ChaiseLong", chaiseLong);
 		checkForLock("Basketball", basketball);
 		checkForLock("book", books);
+		checkForLock("Trap", trap);
+		checkForLock("firedoor", exit);
 	}
 }
