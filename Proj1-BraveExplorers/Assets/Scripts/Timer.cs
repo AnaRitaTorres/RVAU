@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour {
 
@@ -68,7 +69,7 @@ public class Timer : MonoBehaviour {
 		}
 	}
 
-	void Quit() {
-		Application.Quit();
+	public void Quit(){
+		SceneManager.LoadScene("MainMenu");
 	}
 }

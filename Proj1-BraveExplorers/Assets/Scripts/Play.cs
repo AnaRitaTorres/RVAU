@@ -21,6 +21,8 @@ public class Play : MonoBehaviour {
 	public GameObject blue;
 	public GameObject timer;
 
+	public Text endText;
+
 	// Use this for initialization
 	void Start () {
 		status = Status.Placing;
@@ -53,7 +55,7 @@ public class Play : MonoBehaviour {
 	}
 
 	public void EndLevel(){
-		Debug.Log(time.EndTimer());
+		endText.text = time.EndTimer();
 	}
 
 }
