@@ -88,7 +88,6 @@ public class Movement : MonoBehaviour {
 	void Update() {
 
 		// Jumping behaviour
-		Debug.Log(currJumpSpeed);
 		if (jstatus != JumpStatus.Grounded) {
 			if (jstatus == JumpStatus.GoingUp) {
 				if (!paused) {

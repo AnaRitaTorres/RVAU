@@ -8,6 +8,7 @@ public class Play : MonoBehaviour {
 	public enum Status {Placing, Playing};
 	public Button startButton;
 	public Button quitButton;
+	public Button okButton;
 	public Status status;
 	public Timer time;
 	public GameObject readyButton;
@@ -20,6 +21,7 @@ public class Play : MonoBehaviour {
 	public GameObject blue;
 	public GameObject timer;
 	public GameObject gameEnd;
+	public GameObject exitWarning;
 
 	public Text endText;
 
@@ -29,6 +31,7 @@ public class Play : MonoBehaviour {
 		status = Status.Placing;
 		startButton.onClick.AddListener(StartGame);
 		quitButton.onClick.AddListener(time.Quit);
+		okButton.onClick.AddListener(Ok);
 
 		leftButton.SetActive(false);
 		rightButton.SetActive(false);
@@ -37,10 +40,17 @@ public class Play : MonoBehaviour {
 		blue.SetActive(false);
 		timer.SetActive(false);
 		gameEnd.SetActive(false);
+		exitWarning.SetActive(false);
 
 	}
 
 	public void StartGame(){
+
+		if (!checkForExit()){
+			exitWarning.SetActive(true);
+			return;
+		}
+
 		this.status = Status.Playing;
 
 		leftButton.SetActive(true);
@@ -66,6 +76,15 @@ public class Play : MonoBehaviour {
 		rightButton.SetActive(false);
 		jumpButton.SetActive(false);
 		gameEnd.SetActive(true);
+	}
+
+	public bool checkForExit(){
+		if (GameObject.Find("fireexitdoor Container") != null) return true;
+		return false;
+	}
+
+	public void Ok(){
+		exitWarning.SetActive(false);
 	}
 
 }
