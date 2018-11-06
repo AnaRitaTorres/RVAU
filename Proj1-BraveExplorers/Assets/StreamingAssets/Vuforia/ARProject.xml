@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="chain" size="5.000000 5.000000" />
+    <ImageTarget name="exit" size="5.000000 5.000000" />
+    <ImageTarget name="bookstack" size="5.000000 5.300207" />
+    <ImageTarget name="basketball" size="5.000000 5.311203" />
+    <ImageTarget name="sofa" size="5.000000 2.812500" />
+  </Tracking>
+</QCARConfig>
