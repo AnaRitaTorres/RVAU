@@ -1,0 +1,13 @@
+###
+# IDE folders and files
+###
+
+.idea/
+src/.vscode/
+
+###
+# Python files
+###
+
+*.pyc
+*.pyo

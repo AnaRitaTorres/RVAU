@@ -10,6 +10,9 @@ import argparse
 import numpy as np
 import re
 
+from utils import *
+
+
 # A function to run the SIFT algorithm in the map image(s)
 def runSIFT(map, test):
     # Read map image and convert it to grayscale
@@ -18,22 +21,27 @@ def runSIFT(map, test):
 
     # Run the SIFT algorithm to detect keypoints
     sift = cv2.xfeatures2d.SIFT_create()
-    keypoints = sift.detect(grayscaled, None)
+    keypoints, descriptors = sift.detectAndCompute(grayscaled, None)
 
     # Draw Keypoints in the image
     pointsimg = drawKeypoints(grayscaled, keypoints, img, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
+    # Save Keypoints
+    save_keypoints(keypoints, descriptors)
     # Show image and wait
     if (test):
         print("Calculated " + str(len(keypoints)) + " keypoints in " + map)
-    imshow('Keypoints', img)
-    waitKey(2000)
+
+    # Load Keypoints
+    load_keypoints()
+
+    return pointsimg
 
 # Load up parameters
 # python prepare.py -m {mapfile} [-t | --test]
 parser = argparse.ArgumentParser(description="Sets up a map and its points of interest")
 parser.add_argument('-m', '--map', dest='map', default=None, type=str)
-parser.add_argument('-t', '--test', dest='test', action = 'store_true')
+parser.add_argument('-t', '--test', dest='test', action='store_true')
 
 args = parser.parse_args()
 
@@ -46,7 +54,7 @@ if (args.map == None):
     quit()
 
 # if test flag detected
-if (args.test):
+if args.test:
     print('Starting in Test Mode!')
     print('Loading: ' + args.map + ' and related maps')
 
