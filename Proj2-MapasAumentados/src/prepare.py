@@ -65,5 +65,14 @@ trimmed_map_name = args.map.split('.')[0]
 for m in os.listdir('..\\img\\'):
     # match map
     if (re.match("" + trimmed_map_name + r"(\w)*\.\w\w\w", m)):
-        runSIFT("..\\\img\\" + m, args.test)
+        # Run SIFT on map image
+        img = runSIFT("..\\\img\\" + m, args.test)
+
+        # Show Map
+        namedWindow('Keypoints', cv2.WINDOW_NORMAL)
+        imshow('Keypoints', img)
+
+        # Wait for Key Inputs
+        cv2.waitKey(0)
+        destroyAllWindows()
 

@@ -4,7 +4,6 @@ import pickle
 
 filename = 'map.bin'
 
-
 def save_keypoints(keypoints, descriptors):
     kp = serialize_keypoints(keypoints, descriptors)
 
