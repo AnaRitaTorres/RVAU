@@ -27,3 +27,4 @@ if (args.test):
         print('Loading: ' + args.map)
     elif (args.method == 'video'):
         print('Streaming video...')
+

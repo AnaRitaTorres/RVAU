@@ -7,6 +7,24 @@
 
 from cv2 import *
 import argparse
+import numpy as np
+
+# A function to run the SIFT algorithm in the map image(s)
+def runSIFT(map):
+    # Read map image and convert it to grayscale
+    img = imread(map)
+    grayscaled = cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Run the SIFT algorithm to detect keypoints
+    sift = cv2.xfeatures2d.SIFT_create()
+    keypoints = sift.detect(grayscaled, None)
+
+    # Draw Keypoints in the image
+    pointsimg = drawKeypoints(grayscaled, keypoints, img)
+
+    # Show image and wait
+    imshow('Keypoints', img)
+    waitKey(5000)
 
 # Load up parameters
 # python prepare.py -m {mapfile} [-t | --test]
@@ -20,6 +38,7 @@ args = parser.parse_args()
 if (args.test):
     print('Starting in Test Mode!')
     print('Loading: ' + args.map)
+    runSIFT(args.map)
 if (args.map == None):
     print('No map loaded! Quitting...')
     quit()
