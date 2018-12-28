@@ -3,12 +3,14 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QGuiApplication
 from gui.graphic_scene import EditorScene
-from gui.add_point import PointOfInterest
+from gui.add_point import AddPoint
 from core.utils import *
+from core.database import *
+
 
 # Window showing loaded image. Allows to see feature points and add points of interest
 class MainWindow(QMainWindow):
-    def __init__(self, original_image, features, test, map_name):
+    def __init__(self, original_image, features_image, features_info, test, map_name):
         QMainWindow.__init__(self)
 
         # Test mode active
@@ -21,7 +23,10 @@ class MainWindow(QMainWindow):
         self.image = original_image
 
         # Image with feature points
-        self.features = features
+        self.features = features_image
+
+        # Serialized features information
+        self.features_info = features_info
 
         # Strings relating to POIs
         self.pois = []
@@ -93,22 +98,15 @@ class MainWindow(QMainWindow):
         save_and_quit.triggered.connect(self.saveandquit)
         self.toolbar.addAction(save_and_quit)
 
-        # Quit Option
-        quit_act = self.toolbar_button('Quit', 'Quit application', 'Ctrl+Q')
-        quit_act.triggered.connect(QtWidgets.QApplication.quit)
-        self.toolbar.addAction(quit_act)
-
     # Triggered if Save and Quit option is selected on toolbar
     def saveandquit(self):
         # Saves Points of Interest in file
         self.statusBar().showMessage('Saving points of interest...')
-        setupPOI(self.map_name + '_poi', self.test)
-        savePOIs(self.map_name + '_poi', self.pois, self.test)
+        save_database(self.map_name, self.features_info, self.pois)
 
         # Quits Application
         self.statusBar().showMessage('Quitting Application...')
         quit()
-
 
     # Triggered if features options is selected on toolbar
     def select_features(self, toggled: bool):
@@ -137,13 +135,11 @@ class MainWindow(QMainWindow):
     # Called when user tries to add point of interest. Gives clicked position
     def on_point_added(self, scene_position: QPointF):
         # Creates a dialog for the new point of interest
-        dialog = PointOfInterest(scene_position, self.test)
+        dialog = AddPoint(scene_position, self.test)
         dialog.closed_window.connect(self.on_window_closed)
         self.dialogs.append(dialog)
         dialog.show()
 
-    def on_window_closed(self, scene_position: QPointF):
-        if self.test:
-            print("\n Formatted Line: " + scene_position)
-        self.pois.append(scene_position)
+    def on_window_closed(self, point: PointOfInterest):
+        self.pois.append(point)
         self.statusBar().showMessage('Added Point of Interest')

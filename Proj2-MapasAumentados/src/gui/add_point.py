@@ -3,9 +3,11 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QTextEdit, QWidget
 from PyQt5.QtCore import Qt
 from core.utils import *
+from core.database import *
+
 
 # Window triggered when user tries to add Point of Interest on map
-class PointOfInterest(QMainWindow):
+class AddPoint(QMainWindow):
     # Signal main window that window closed
     closed_window = QtCore.pyqtSignal(object)
 
@@ -18,23 +20,22 @@ class PointOfInterest(QMainWindow):
         # Images uploaded by user
         self.images = []
 
-        # Position clicked by user
-        self.position = position
+        # Get X Position
+        self.position_x = int(position.x())
+
+        # Get Y Position
+        self.position_y = int(position.y())
 
         # Main layout
         self.layout = QVBoxLayout()
 
         # Init window widgets
         self.init_widgets()
+
         # Configure window and show it
         self.configure_window()
 
     def init_widgets(self):
-        # Get X Position
-        self.position_x = int(self.position.x())
-        # Get Y Position
-        self.position_y = int(self.position.y())
-
         # Show position label
         text_position = 'Point Position: (x: {:d}, y: {:d})'.format(self.position_x, self.position_y)
         position_label = QLabel(text_position)
@@ -116,7 +117,8 @@ class PointOfInterest(QMainWindow):
             print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
 
         # Signal main window that this window closed
-        self.closed_window.emit(formatPOI(self.position_x, self.position_y, self.name_edit.text(), self.images))
+        point = PointOfInterest(self.position_x, self.position_y, self.name_edit.text(), self.images)
+        self.closed_window.emit(point)
         return self.close()
 
     def configure_window(self):

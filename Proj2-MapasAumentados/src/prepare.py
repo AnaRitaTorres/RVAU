@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import QApplication
 import sys
 import argparse
 from gui.gui import MainWindow
-from core.image import *
+from core.detector import *
+from core.database import *
 
 
 def parse_args(args):
@@ -36,6 +37,8 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--map', dest='map', default=None, type=str)
     parser.add_argument('-t', '--test', dest='test', action='store_true')
 
+    load_database()
+
     arguments = parser.parse_args()
     map_name = parse_args(arguments)
     paths = read_image(map_name)
@@ -44,9 +47,9 @@ if __name__ == '__main__':
     img = cv2.imread(paths[0])
 
     # Run SIFT on map image
-    features = runSIFT(paths[0], map_name, arguments.test)
+    results = runSIFT(paths[0], map_name, arguments.test)
 
     app = QApplication(sys.argv)
-    window = MainWindow(img, features, arguments.test, map_name)
+    window = MainWindow(img, results['img_features'], results['pts_features'], arguments.test, map_name)
     sys.exit(app.exec_())
 
