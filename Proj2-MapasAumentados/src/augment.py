@@ -7,6 +7,7 @@
 
 from cv2 import *
 import argparse
+from core.video import *
 
 # Load up parameters
 # python prepare.py [video|img] -m {mapfile} [-t | --test]
@@ -27,4 +28,5 @@ if (args.test):
         print('Loading: ' + args.map)
     elif (args.method == 'video'):
         print('Streaming video...')
+        CaptureVideo()
 
