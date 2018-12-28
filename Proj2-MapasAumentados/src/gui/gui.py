@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
 
     # Triggered if option to add points of interest is clicked
     def add_point(self):
-        self.statusBar().showMessage('Add Point of Interest')
+        self.statusBar().showMessage('Adding Point of Interest...')
 
         # Changes cursor to Cross Cursor
         QGuiApplication.setOverrideCursor(Qt.CrossCursor)
@@ -112,5 +112,10 @@ class MainWindow(QMainWindow):
     def on_point_added(self, scene_position: QPointF):
         # Creates a dialog for the new point of interest
         dialog = PointOfInterest(scene_position)
+        dialog.closed_window.connect(self.on_window_closed)
         self.dialogs.append(dialog)
         dialog.show()
+
+    def on_window_closed(self, scene_position: QPointF):
+        print(scene_position)
+        self.statusBar().showMessage('Added Point of Interest')

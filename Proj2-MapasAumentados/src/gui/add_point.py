@@ -1,10 +1,14 @@
 import os
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QTextEdit, QWidget
 from PyQt5.QtCore import Qt
 
 
+# Window triggered when tries to add Point of Interest on map
 class PointOfInterest(QMainWindow):
+    # Signal main window that window closed
+    closed_window = QtCore.pyqtSignal(object)
+
     def __init__(self, position):
         super().__init__()
 
@@ -74,16 +78,22 @@ class PointOfInterest(QMainWindow):
         window.setLayout(self.layout)
         self.setCentralWidget(window)
 
+    # Triggered when user tries to add image to point of interest
     def add_image(self):
+        # Opens dialog to add Images of type .png and .jpg
         filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
                                                              'Images (*.png *.jpg)')
+        # If filename is valid
         if filename:
             self.images.append(filename)
 
+        # Update UI text showing number of images uploaded
         upload_text = 'Uploaded Images: {:d}'.format(len(self.images))
         self.upload_label.setText(upload_text)
 
+    # Triggered when user tries to add point
     def add_point(self):
+        # Check if name is valid
         if self.name_edit.text() == '':
             info_box = QtWidgets.QMessageBox(self)
             info_box.setWindowTitle("Error")
@@ -91,6 +101,7 @@ class PointOfInterest(QMainWindow):
             info_box.setText("Name can't be empty!")
             return info_box.exec()
 
+        # Check if Point of Interest has images
         if len(self.images) == 0:
             info_box = QtWidgets.QMessageBox(self)
             info_box.setWindowTitle("Error")
@@ -102,6 +113,8 @@ class PointOfInterest(QMainWindow):
 
         # TODO: SAVE POINT OF INTEREST TO DATABASE AND ITS IMAGES HERE!!!!!
 
+        # Signal main window that this window closed
+        self.closed_window.emit(self.position)
         return self.close()
 
     def configure_window(self):
