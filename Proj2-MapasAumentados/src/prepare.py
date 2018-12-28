@@ -1,10 +1,14 @@
-from PyQt5.QtWidgets import QApplication
+# RVAU 2018/19
+# Second Practical Project - Augmented Maps
+# by Ana Rita Torres, Cláudia Marinho, Rui Soares
 
+# This program acts as the preparation for the map
+# It can be run on a normal or test mode
+
+from PyQt5.QtWidgets import QApplication
 import sys
 import argparse
-
 from gui.gui import MainWindow
-
 from core.image import *
 
 

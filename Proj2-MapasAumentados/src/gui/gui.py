@@ -1,9 +1,9 @@
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QGuiApplication
-
 from gui.graphic_scene import EditorScene
+from gui.add_point import PointOfInterest
 
 
 # Window showing loaded image. Allows to see feature points and add points of interest
@@ -26,11 +26,13 @@ class MainWindow(QMainWindow):
 
         # Canvas scene and view
         self.editor_scene = EditorScene()
+        self.editor_scene.add_point.connect(self.on_point_added)
         self.editor_view = QtWidgets.QGraphicsView(self.editor_scene)
         self.setCentralWidget(self.editor_view)
 
         # Display loaded image
         self.editor_scene.display_image(self.image)
+        self.dialogs = list()
         self.show()
 
     def configure_window(self):
@@ -99,3 +101,8 @@ class MainWindow(QMainWindow):
 
         # Canvas is now clickable
         self.editor_scene.clickable = True
+
+    def on_point_added(self, scene_position: QPointF):
+        dialog = PointOfInterest(scene_position)
+        self.dialogs.append(dialog)
+        dialog.show()

@@ -1,10 +1,12 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QImage
 
 
 # Subclass of QGraphicsScene, handles image loading on canvas and mouse events
 class EditorScene(QtWidgets.QGraphicsScene):
+    add_point = QtCore.pyqtSignal(object)
+
     def __init__(self):
         super().__init__()
 
@@ -46,10 +48,12 @@ class EditorScene(QtWidgets.QGraphicsScene):
         if self.clickable:
             # Map position in which user clicked
             position = event.scenePos()
-            print(position)
 
             # Change cursor to default
             QGuiApplication.setOverrideCursor(Qt.ArrowCursor)
 
             # Map stops being clickable
             self.clickable = False
+
+            self.add_point.emit(position)
+
