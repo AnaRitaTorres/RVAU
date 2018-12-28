@@ -24,14 +24,20 @@ class MainWindow(QMainWindow):
         self.toolbar = self.addToolBar('Main Toolbar')
         self.configure_toolbar()
 
-        # Canvas scene and view
+        # Canvas scene
         self.editor_scene = EditorScene()
+        # Slot called when user tries to add Point of Interest
         self.editor_scene.add_point.connect(self.on_point_added)
+        # Canvas view
         self.editor_view = QtWidgets.QGraphicsView(self.editor_scene)
+
+        # Set image canvas as the central widget
         self.setCentralWidget(self.editor_view)
 
         # Display loaded image
         self.editor_scene.display_image(self.image)
+
+        # The user may open more than one dialog to add points of interest
         self.dialogs = list()
         self.show()
 
@@ -102,7 +108,9 @@ class MainWindow(QMainWindow):
         # Canvas is now clickable
         self.editor_scene.clickable = True
 
+    # Called when user tries to add point of interest. Gives clicked position
     def on_point_added(self, scene_position: QPointF):
+        # Creates a dialog for the new point of interest
         dialog = PointOfInterest(scene_position)
         self.dialogs.append(dialog)
         dialog.show()
