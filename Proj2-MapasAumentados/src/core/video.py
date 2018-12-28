@@ -3,8 +3,9 @@ from cv2 import *
 space_key = 32
 esc_key = 27
 
-# Returns a stream of video from webcamera
-def CaptureVideo():
+
+# Returns a stream of video from web camera
+def capture_video():
 
     # Start Video Capture
     cap = VideoCapture(0)
@@ -13,7 +14,7 @@ def CaptureVideo():
     img = None
 
     # Video Loop
-    while(True):
+    while True:
 
         # Read next frame
         ret, frame = cap.read()

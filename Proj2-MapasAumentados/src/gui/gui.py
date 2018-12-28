@@ -4,8 +4,9 @@ from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QGuiApplication
 from gui.graphic_scene import EditorScene
 from gui.add_point import AddPoint
-from core.utils import *
 from core.database import *
+
+color_poi = (0, 0, 255)
 
 
 # Window showing loaded image. Allows to see feature points and add points of interest
@@ -83,10 +84,10 @@ class MainWindow(QMainWindow):
 
     def configure_toolbar(self):
         # Show or Hide Features Option
-        features = self.toolbar_button('Show Keypoints', 'Shows feature points', 'Ctrl+F')
-        features.setCheckable(True)
-        features.toggled.connect(self.select_features)
-        self.toolbar.addAction(features)
+        self.features_action = self.toolbar_button('Show Keypoints', 'Shows feature points', 'Ctrl+F')
+        self.features_action.setCheckable(True)
+        self.features_action.toggled.connect(self.select_features)
+        self.toolbar.addAction(self.features_action)
 
         # Add Points of Interest Option
         point_of_interest = self.toolbar_button('Point of Interest', 'Add Point of Interest', 'Ctrl+P')
@@ -143,3 +144,14 @@ class MainWindow(QMainWindow):
     def on_window_closed(self, point: PointOfInterest):
         self.pois.append(point)
         self.statusBar().showMessage('Added Point of Interest')
+
+        self.image = cv2.circle(self.image, (point.position_x, point.position_y), 20, color_poi, 2)
+        self.features = cv2.circle(self.features, (point.position_x, point.position_y), 20, color_poi, 2)
+
+        # See if features toggle is checked
+        if self.features_action.isChecked():
+            # Display features if it's checked
+            self.editor_scene.display_image(self.features)
+        else:
+            # Display original image if it's not
+            self.editor_scene.display_image(self.image)
