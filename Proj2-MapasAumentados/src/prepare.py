@@ -13,8 +13,6 @@ from core.image import *
 
 
 def parse_args(args):
-    print(os.listdir('../img'))
-
     # If no map is given in command, quit
     if args.map is None:
         if args.test:
@@ -49,6 +47,6 @@ if __name__ == '__main__':
     features = runSIFT(paths[0], map_name, arguments.test)
 
     app = QApplication(sys.argv)
-    window = MainWindow(img, features)
+    window = MainWindow(img, features, arguments.test, map_name)
     sys.exit(app.exec_())
 

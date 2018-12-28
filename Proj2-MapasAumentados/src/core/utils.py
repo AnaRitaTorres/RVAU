@@ -5,7 +5,60 @@ import os
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 database_path = dir_path + '/database/'
+pois_path = database_path + '/POIs/'
 
+# Creates POI folder and file
+def setupPOI(filename, test):
+    # Creates POIs directory
+    if not os.path.exists(pois_path):
+        os.makedirs(pois_path)
+    
+    if test:
+        print('\nSetting up Points of Interest on file ' + filename + '.txt\n')
+
+    # Create file
+    pois_file = open(pois_path + filename + '.txt', mode='wb')
+    pois_file.close()
+
+# Saves all POI strings in the corresponding file
+def savePOIs(filename, pois, test):
+    pois_file = open(pois_path + filename + '.txt', mode='wb')
+
+    for poi in pois:
+        if not pois[len(pois) - 1] == poi:
+            if (test):
+                print("Writing Line: " + poi)
+            pois_file.write(str(poi + '\n').encode())
+        else: 
+            pois_file.write(poi.encode())
+            print("Writing Line: " + poi)
+
+    pois_file.close()
+
+# Format POI information to line (semicolumn-separated, images are comma-separated)
+def formatPOI(positionx, positiony, name, imgs):
+    # Create empty string
+    to_return = str()
+
+    # Add X
+    to_return += str(positionx)
+    to_return += ';'
+
+    # Add Y
+    to_return += str(positiony)
+    to_return += ';'
+
+    # Add POI name
+    to_return += name
+    to_return += ';'
+
+    # Add images' names
+    for img in imgs:
+        to_return += img
+        if not imgs[len(imgs) - 1] == img:
+            to_return += ','
+
+    return to_return
 
 # Save Keypoints to file
 def save_keypoints(filename, keypoints, descriptors, test):
@@ -17,7 +70,7 @@ def save_keypoints(filename, keypoints, descriptors, test):
     kp = serialize_keypoints(keypoints, descriptors)
 
     if test:
-        print('\nSaving keypoints and their descriptors to file ' + filename + '_kp.bin\n');
+        print('\nSaving keypoints and their descriptors to file ' + filename + '_kp.bin\n')
 
     binary_file = open(database_path + filename + '_kp.bin', mode='wb')
     pickle.dump(kp, binary_file)

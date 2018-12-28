@@ -2,6 +2,7 @@ import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QTextEdit, QWidget
 from PyQt5.QtCore import Qt
+from core.utils import *
 
 
 # Window triggered when user tries to add Point of Interest on map
@@ -9,8 +10,11 @@ class PointOfInterest(QMainWindow):
     # Signal main window that window closed
     closed_window = QtCore.pyqtSignal(object)
 
-    def __init__(self, position):
+    def __init__(self, position, test):
         super().__init__()
+
+        # Is in test mode
+        self.test = test
 
         # Images uploaded by user
         self.images = []
@@ -109,12 +113,11 @@ class PointOfInterest(QMainWindow):
             info_box.setText("Need to add at least a image!")
             return info_box.exec()
 
-        print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
-
-        # TODO: SAVE POINT OF INTEREST AND ITS IMAGES TO DATABASE HERE!!!!!
+        if self.test:
+            print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
 
         # Signal main window that this window closed
-        self.closed_window.emit(self.position)
+        self.closed_window.emit(formatPOI(self.position_x, self.position_y, self.name_edit.text(), self.images))
         return self.close()
 
     def configure_window(self):
