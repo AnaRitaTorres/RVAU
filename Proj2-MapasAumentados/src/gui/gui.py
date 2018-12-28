@@ -95,11 +95,11 @@ class MainWindow(QMainWindow):
 
         # Save and Quit Option
         save_and_quit = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application', 'Ctrl+S')
-        save_and_quit.triggered.connect(self.saveandquit)
+        save_and_quit.triggered.connect(self.save_and_quit)
         self.toolbar.addAction(save_and_quit)
 
     # Triggered if Save and Quit option is selected on toolbar
-    def saveandquit(self):
+    def save_and_quit(self):
         # Saves Points of Interest in file
         self.statusBar().showMessage('Saving points of interest...')
         save_database(self.map_name, self.features_info, self.pois)

@@ -71,20 +71,25 @@ def update_database(filename, image):
         if not img_exists:
             images.append(image)
     else:
+        # If database doesn't exist, just append current image
         images.append(image)
 
     return images
 
 
+# Saves image to database
 def save_database(filename, features, pois):
+    # Get points with new file paths
     points = setup_pois(pois)
 
     for p in points:
         print('Points', p.name, p.position_x, p.position_x, p.images)
 
+    # Create image object
     image = Image(filename, features, points)
     images = update_database(filename, image)
 
+    # Save images to database
     binary_file = open(database_name, mode='wb')
     pickle.dump(images, binary_file)
     binary_file.close()
