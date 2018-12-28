@@ -2,10 +2,11 @@ from cv2 import *
 import numpy as np
 import pickle
 import os
+from shutil import copy
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-database_path = dir_path + '/database/'
-pois_path = database_path + '/POIs/'
+database_path = dir_path + '\\database\\'
+pois_path = database_path + 'POIs\\'
 
 # Creates POI folder and file
 def setupPOI(filename, test):
@@ -20,12 +21,22 @@ def setupPOI(filename, test):
     pois_file = open(pois_path + filename + '.txt', mode='wb')
     pois_file.close()
 
-# Saves all POI strings in the corresponding file
+# Copy file (image) to POI folder
+def copyFile(filename):
+    return copy(filename, pois_path)
+
+# Copies each POI's images to the appropriate folder, then saves all POI strings in the corresponding file
 def savePOIs(filename, pois, test):
+
+    new_pois = []
+    for poi in pois:
+        new_pois.append(copyImages(poi))
+
+    # Open POIs file
     pois_file = open(pois_path + filename + '.txt', mode='wb')
 
-    for poi in pois:
-        if not pois[len(pois) - 1] == poi:
+    for poi in new_pois:
+        if not new_pois[len(pois) - 1] == poi:
             if (test):
                 print("Writing Line: " + poi)
             pois_file.write(str(poi + '\n').encode())
@@ -34,6 +45,19 @@ def savePOIs(filename, pois, test):
             print("Writing Line: " + poi)
 
     pois_file.close()
+
+# Parses images from a POI string and copies them
+def copyImages(poi):
+    poi_split = poi.split(';')
+    imgs = poi_split[3]
+    imgs_split = imgs.split(',')
+    new_imgs_split = []
+    for img in imgs_split:
+        new_imgs_split.append(copyFile(img))
+
+    new_imgs = ','.join(new_imgs_split)
+    new_poi = poi_split[0] + ';' + poi_split[1] + ';' + poi_split[2] + ';' + new_imgs
+    return new_poi
 
 # Format POI information to line (semicolumn-separated, images are comma-separated)
 def formatPOI(positionx, positiony, name, imgs):

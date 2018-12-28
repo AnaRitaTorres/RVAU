@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLa
 from PyQt5.QtCore import Qt
 from core.utils import *
 
-
 # Window triggered when user tries to add Point of Interest on map
 class PointOfInterest(QMainWindow):
     # Signal main window that window closed
