@@ -49,11 +49,12 @@ class EditorScene(QtWidgets.QGraphicsScene):
             # Map position in which user clicked
             position = event.scenePos()
 
-            # Change cursor to default
-            QGuiApplication.setOverrideCursor(Qt.ArrowCursor)
+            if position.x() > 0 and position.y() > 0:
+                # Change cursor to default
+                QGuiApplication.setOverrideCursor(Qt.ArrowCursor)
 
-            # Map stops being clickable
-            self.clickable = False
+                # Map stops being clickable
+                self.clickable = False
 
-            self.add_point.emit(position)
+                self.add_point.emit(position)
 

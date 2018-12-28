@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLa
 from PyQt5.QtCore import Qt
 
 
-# Window triggered when tries to add Point of Interest on map
+# Window triggered when user tries to add Point of Interest on map
 class PointOfInterest(QMainWindow):
     # Signal main window that window closed
     closed_window = QtCore.pyqtSignal(object)
@@ -111,7 +111,7 @@ class PointOfInterest(QMainWindow):
 
         print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
 
-        # TODO: SAVE POINT OF INTEREST TO DATABASE AND ITS IMAGES HERE!!!!!
+        # TODO: SAVE POINT OF INTEREST AND ITS IMAGES TO DATABASE HERE!!!!!
 
         # Signal main window that this window closed
         self.closed_window.emit(self.position)
