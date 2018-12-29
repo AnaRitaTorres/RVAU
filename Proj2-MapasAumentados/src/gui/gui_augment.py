@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
         if (self.mode == 'image'):
             self.editor_scene.display_image(self.image)
         elif (self.mode == 'video'):
+            self.statusBar().showMessage('Loading Webcam Feed...')
             QTimer.singleShot(1, self.startVideo)
                 
     def startVideo(self):
@@ -57,7 +58,11 @@ class MainWindow(QMainWindow):
             self.update()
             QApplication.processEvents()
             ret, frame = cap.read()
-            self.img = frame
+            height, width, depth = frame.shape
+            newheight = 1.2 * height
+            newwidth =  1.2 * width
+            newframe = resize(frame, (int(newwidth), int(newheight)))
+            self.img = newframe
             self.editor_scene.display_image(self.img)
         cap.release()
 
@@ -86,7 +91,6 @@ class MainWindow(QMainWindow):
         # Set tooltip
         action.setToolTip(tooltip)
         return action
-
 
     def configure_toolbar(self):
         # Quit Option
