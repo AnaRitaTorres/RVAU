@@ -12,12 +12,16 @@ from core.matcher import *
 from core.detector import *
 from gui.gui_augment import MainWindow
 
-# python augment.py image -m 'london_tourist_map.jpg' -t
-
+# python augment.py image -m 'london_tourist_map_rotate.jpg' -o 'london_tourist_map.jpg' -t'
+# python augment.py video -o 'london_tourist_map.jpg' -t
 
 def parse_args_image(args):
     if args.map is None:
         print('No map loaded! Quitting...')
+        quit()
+
+    if args.original_map is None:
+        print('No original map given! Quitting...')
         quit()
 
     print('Loading: ' + args.map)
@@ -37,6 +41,11 @@ def parse_args_image(args):
 
 
 def parse_args_video():
+
+    if args.original_map is None:
+        print('No original map given! Quitting...')
+        quit()
+
     print('Streaming video...')
     app = QApplication(sys.argv)
     window = MainWindow('video', None, arguments.test)
@@ -49,6 +58,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Sets up a map and its points of interest")
     parser.add_argument('method', help='\'video\' or \'image\'', type=str)
     parser.add_argument('-m', '--map', dest='map', default=None, type=str)
+    parser.add_argument('-o', '--original_map', dest='original_map', default=None, type=str)
     parser.add_argument('-t', '--test', dest='test', action = 'store_true')
 
     arguments = parser.parse_args()

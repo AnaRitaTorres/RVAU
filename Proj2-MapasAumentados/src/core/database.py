@@ -45,7 +45,6 @@ def load_database():
 
     print('\n')
 
-
 # Check if database exists and update its contents if it exists
 def update_database(filename, image):
     images = []
@@ -75,7 +74,6 @@ def update_database(filename, image):
         images.append(image)
 
     return images
-
 
 # Saves image to database
 def save_database(filename, features, pois):
