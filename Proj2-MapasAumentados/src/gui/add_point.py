@@ -1,15 +1,16 @@
-import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QTextEdit, QWidget
 from PyQt5.QtCore import Qt
-from core.utils import *
 from core.database import *
 
 
 # Window triggered when user tries to add Point of Interest on map
 class AddPoint(QMainWindow):
-    # Signal main window that window closed
-    closed_window = QtCore.pyqtSignal(object)
+    # Signal main window that point is being saved
+    save_point = QtCore.pyqtSignal(object)
+
+    # Signal main window that window was closed
+    closed_window = QtCore.pyqtSignal()
 
     def __init__(self, position, test):
         super().__init__()
@@ -118,11 +119,16 @@ class AddPoint(QMainWindow):
 
         # Signal main window that this window closed
         point = PointOfInterest(self.position_x, self.position_y, self.name_edit.text(), self.images)
-        self.closed_window.emit(point)
+        self.save_point.emit(point)
         return self.close()
 
+    # Sets up window
     def configure_window(self):
         self.setGeometry(300, 300, 280, 170)
         self.setWindowTitle('Point of Interest')
         self.show()
 
+    # Triggered when user tries to close this window
+    def closeEvent(self, event):
+        self.closed_window.emit()
+        event.accept()

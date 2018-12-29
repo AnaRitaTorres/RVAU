@@ -8,6 +8,7 @@
 from cv2 import *
 import argparse
 from core.video import *
+from core.matcher import *
 
 # python augment.py image -m 'london_tourist_map.jpg' -t
 
@@ -18,6 +19,18 @@ def parse_args_image(args):
         quit()
 
     print('Loading: ' + args.map)
+
+    # Read image
+    img = imread(args.map)
+
+    img = draw_poi(img)
+
+    # Create window map
+    # TODO: Use PyQt5 to show this stuff
+    namedWindow('Map', cv2.WINDOW_NORMAL)
+    cv2.imshow('Map', img)
+
+    waitKey(0)
 
 
 def parse_args_video():

@@ -137,14 +137,21 @@ class MainWindow(QMainWindow):
     def on_point_added(self, scene_position: QPointF):
         # Creates a dialog for the new point of interest
         dialog = AddPoint(scene_position, self.test)
+        dialog.save_point.connect(self.on_point_saved)
         dialog.closed_window.connect(self.on_window_closed)
         self.dialogs.append(dialog)
         dialog.show()
 
-    def on_window_closed(self, point: PointOfInterest):
+    # Triggered when point of interest pop-up is closed without saving
+    def on_window_closed(self):
+        self.statusBar().showMessage('Canceled adding Point Of Interest')
+
+    # Triggered when point of interest is saved
+    def on_point_saved(self, point: PointOfInterest):
         self.pois.append(point)
         self.statusBar().showMessage('Added Point of Interest')
 
+        # Draw a circle on point in which user added point of interest
         self.image = cv2.circle(self.image, (point.position_x, point.position_y), 20, color_poi, 2)
         self.features = cv2.circle(self.features, (point.position_x, point.position_y), 20, color_poi, 2)
 
@@ -155,3 +162,17 @@ class MainWindow(QMainWindow):
         else:
             # Display original image if it's not
             self.editor_scene.display_image(self.image)
+
+    # Close event triggered when user tries to close main window
+    def closeEvent(self, event):
+        # Shows pop-up asking user whether he wants to close without saving
+        reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                               "You haven't saved the map entry yet!<br>"
+                                               "Are you sure you want to close?", QtWidgets.QMessageBox.Yes |
+                                               QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+
+        # Accept or ignore close event depending on user's response
+        if reply == QtWidgets.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()

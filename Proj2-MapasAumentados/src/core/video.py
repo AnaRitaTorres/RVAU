@@ -1,4 +1,5 @@
 from cv2 import *
+from core.matcher import *
 
 space_key = 32
 esc_key = 27
@@ -18,6 +19,8 @@ def capture_video():
 
         # Read next frame
         ret, frame = cap.read()
+
+        frame = draw_poi(frame)
         
         # Show frame
         imshow('frame', frame)

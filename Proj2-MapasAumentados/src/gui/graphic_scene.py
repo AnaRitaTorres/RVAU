@@ -35,8 +35,11 @@ class EditorScene(QtWidgets.QGraphicsScene):
         # Swap colors
         q_image = q_image.rgbSwapped()
 
+        # Get pixmap
+        pixmap = QtGui.QPixmap(q_image)
+
         # Show image
-        self.addPixmap(QtGui.QPixmap(q_image))
+        self.addPixmap(pixmap)
 
     # Overrides mouse press event to get position on map
     def mousePressEvent(self, event: QtWidgets.QGraphicsSceneMouseEvent):
