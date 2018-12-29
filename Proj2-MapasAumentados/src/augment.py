@@ -5,10 +5,13 @@
 # This program takes an image feed and pinpoints points of interest
 # It can be run on a normal or test mode
 
-from cv2 import *
+import sys
 import argparse
+from PyQt5.QtWidgets import QApplication
 from core.video import *
 from core.matcher import *
+from core.detector import *
+from gui.gui_augment import MainWindow
 
 # python augment.py image -m 'london_tourist_map.jpg' -t
 
@@ -20,22 +23,32 @@ def parse_args_image(args):
 
     print('Loading: ' + args.map)
 
+    trimmed_map_name = args.map.split('.')[0]
+    loadedmap = read_image(trimmed_map_name)[0]
+
     # Read image
-    img = imread(args.map)
+    img = imread(loadedmap)
 
     img = draw_poi(img)
 
     # Create window map
     # TODO: Use PyQt5 to show this stuff
-    namedWindow('Map', cv2.WINDOW_NORMAL)
-    cv2.imshow('Map', img)
+    #namedWindow('Map', cv2.WINDOW_NORMAL)
+    #cv2.imshow('Map', img)
 
-    waitKey(0)
+    #waitKey(0)
+    
+    app = QApplication(sys.argv)
+    window = MainWindow('image', img, arguments.test)
+    sys.exit(app.exec_())
 
 
 def parse_args_video():
     print('Streaming video...')
-    capture_video()
+    #capture_video()
+    app = QApplication(sys.argv)
+    window = MainWindow('video', None, arguments.test)
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
@@ -54,8 +67,8 @@ if __name__ == '__main__':
 
     if arguments.method == 'image':
         parse_args_image(arguments)
+   
     else:
         parse_args_video()
-   
     
 
