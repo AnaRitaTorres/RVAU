@@ -8,7 +8,6 @@
 import sys
 import argparse
 from PyQt5.QtWidgets import QApplication
-from core.video import *
 from core.matcher import *
 from core.detector import *
 from gui.gui_augment import MainWindow
@@ -31,13 +30,7 @@ def parse_args_image(args):
 
     img = draw_poi(img)
 
-    # Create window map
-    # TODO: Use PyQt5 to show this stuff
-    #namedWindow('Map', cv2.WINDOW_NORMAL)
-    #cv2.imshow('Map', img)
-
-    #waitKey(0)
-    
+    # Create window map    
     app = QApplication(sys.argv)
     window = MainWindow('image', img, arguments.test)
     sys.exit(app.exec_())
@@ -45,7 +38,6 @@ def parse_args_image(args):
 
 def parse_args_video():
     print('Streaming video...')
-    #capture_video()
     app = QApplication(sys.argv)
     window = MainWindow('video', None, arguments.test)
     sys.exit(app.exec_())

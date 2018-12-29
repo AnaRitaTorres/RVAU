@@ -8,7 +8,7 @@ def draw_poi(image):
     # Get Image Center
     center = (int(w/2), int(h/2))
 
-    image = cv2.circle(image, center, 11, (0, 255, 255), -1)
-    image = cv2.circle(image, center, 12, (0, 0, 0), 2)
+    image = cv2.circle(image, center, 6, (0, 255, 255), -1)
+    image = cv2.circle(image, center, 7, (0, 0, 0), 2)
 
     return image

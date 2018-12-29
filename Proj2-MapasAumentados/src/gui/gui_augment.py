@@ -2,8 +2,9 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtCore import Qt, QPointF, QThread, QTimer
 from PyQt5.QtGui import QGuiApplication
-import time
 from gui.graphic_scene import EditorScene
+from core.video import *
+import time
 from cv2 import *
 
 # Window showing loaded image. Allows to see feature points and add points of interest
@@ -57,12 +58,7 @@ class MainWindow(QMainWindow):
         while True:
             self.update()
             QApplication.processEvents()
-            ret, frame = cap.read()
-            height, width, depth = frame.shape
-            newheight = 1.2 * height
-            newwidth =  1.2 * width
-            newframe = resize(frame, (int(newwidth), int(newheight)))
-            self.img = newframe
+            self.img = captureVideo(cap)
             self.editor_scene.display_image(self.img)
         cap.release()
 
