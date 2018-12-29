@@ -29,14 +29,19 @@ def parse_args_image(args):
     trimmed_map_name = args.map.split('.')[0]
     loadedmap = read_image(trimmed_map_name)[0]
 
+    trimmed_original_map_name = args.original_map.split('.')[0]
+    loadedoriginal = read_image(trimmed_original_map_name)[0]
+
     # Read image
     img = imread(loadedmap)
+    original_map = imread(loadedoriginal)
 
+    # Process image
     img = draw_poi(img)
 
     # Create window map    
     app = QApplication(sys.argv)
-    window = MainWindow('image', img, arguments.test)
+    window = MainWindow('image', img, original_map, arguments.test)
     sys.exit(app.exec_())
 
 
@@ -47,8 +52,14 @@ def parse_args_video():
         quit()
 
     print('Streaming video...')
+
+    trimmed_original_map_name = args.original_map.split('.')[0]
+    loadedoriginal = read_image(trimmed_original_map_name)[0]
+
+    original_map = imread(loadedoriginal)
+
     app = QApplication(sys.argv)
-    window = MainWindow('video', None, arguments.test)
+    window = MainWindow('video', None, original_map, arguments.test)
     sys.exit(app.exec_())
 
 

@@ -9,11 +9,14 @@ from cv2 import *
 
 # Window showing loaded image. Allows to see feature points and add points of interest
 class MainWindow(QMainWindow):
-    def __init__(self, mode, original_image, test):
+    def __init__(self, mode, original_image, original_map, test):
         QMainWindow.__init__(self)
 
         # Test mode active
         self.test = test
+
+        # Get Original map
+        self.original_map = original_map
 
         # Check mode
         if mode == 'image':
