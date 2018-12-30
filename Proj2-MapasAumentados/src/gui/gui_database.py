@@ -5,29 +5,19 @@ from PyQt5.QtGui import QGuiApplication
 from gui.graphic_scene import EditorScene
 from gui.add_point import AddPoint
 from core.database import *
+from core.detector import *
 
+# Color of point of interest on map
 color_poi = (0, 0, 255)
 
 
 # Window showing loaded image. Allows to see feature points and add points of interest
 class MainWindow(QMainWindow):
-    def __init__(self, original_image, features_image, features_info, test, map_name):
+    def __init__(self, test):
         QMainWindow.__init__(self)
 
         # Test mode active
         self.test = test
-
-        # Original map's name
-        self.map_name = map_name
-
-        # Original Image
-        self.image = original_image
-
-        # Image with feature points
-        self.features = features_image
-
-        # Serialized features information
-        self.features_info = features_info
 
         # Strings relating to POIs
         self.pois = []
@@ -49,9 +39,6 @@ class MainWindow(QMainWindow):
         # Set image canvas as the central widget
         self.setCentralWidget(self.editor_view)
 
-        # Display loaded image
-        self.editor_scene.display_image(self.image)
-
         # The user may open more than one dialog to add points of interest
         self.dialogs = list()
         self.show()
@@ -65,7 +52,7 @@ class MainWindow(QMainWindow):
         self.resize(int(screen_size.width() * 4 / 5), int(screen_size.height() * 4 / 5))
 
         # Shows status bar message
-        self.statusBar().showMessage('Ready')
+        self.statusBar().showMessage('Load an image')
 
     def toolbar_button(self, text: str, tooltip: str = None, shortcut: str = None) -> QtWidgets.QAction:
         # Creates action
@@ -84,20 +71,57 @@ class MainWindow(QMainWindow):
 
     def configure_toolbar(self):
         # Show or Hide Features Option
+        self.load_action = self.toolbar_button('Load Image', 'Load an image', 'Ctrl+I')
+        self.load_action.setCheckable(True)
+        self.load_action.toggled.connect(self.open_image)
+        self.toolbar.addAction(self.load_action)
+
+        # Show or Hide Features Option
         self.features_action = self.toolbar_button('Show Keypoints', 'Shows feature points', 'Ctrl+F')
         self.features_action.setCheckable(True)
+        self.features_action.setDisabled(True)
         self.features_action.toggled.connect(self.select_features)
         self.toolbar.addAction(self.features_action)
 
         # Add Points of Interest Option
-        point_of_interest = self.toolbar_button('Point of Interest', 'Add Point of Interest', 'Ctrl+P')
-        point_of_interest.triggered.connect(self.add_point)
-        self.toolbar.addAction(point_of_interest)
+        self.add_point_action = self.toolbar_button('Point of Interest', 'Add Point of Interest', 'Ctrl+P')
+        self.add_point_action.setDisabled(True)
+        self.add_point_action.triggered.connect(self.add_point)
+        self.toolbar.addAction(self.add_point_action)
 
         # Save and Quit Option
-        save_and_quit = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application', 'Ctrl+S')
-        save_and_quit.triggered.connect(self.save_and_quit)
-        self.toolbar.addAction(save_and_quit)
+        self.save_action = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application', 'Ctrl+S')
+        self.save_action.setDisabled(True)
+        self.save_action.triggered.connect(self.save_and_quit)
+        self.toolbar.addAction(self.save_action)
+
+    def open_image(self):
+        filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
+                                                             'Images (*.png *.jpg)')
+        if filename:
+            self.load_image(filename)
+            self.features_action.setDisabled(False)
+            self.add_point_action.setDisabled(False)
+            self.save_action.setDisabled(False)
+            self.load_action.setDisabled(True)
+
+    def load_image(self, filename):
+        # Read original image
+        img = cv2.imread(filename)
+
+        # Run SIFT on map image
+        results = runSIFT(filename, self.test)
+
+        self.map_name = filename
+        self.image = img
+        self.features = results['img_features']
+        self.features_info = results['pts_features']
+
+        # Display loaded image
+        self.editor_scene.display_image(self.image)
+
+        # Show message after loading image
+        self.statusBar().showMessage('Loaded image successfully!')
 
     # Triggered if Save and Quit option is selected on toolbar
     def save_and_quit(self):
@@ -137,9 +161,12 @@ class MainWindow(QMainWindow):
     def on_point_added(self, scene_position: QPointF):
         # Creates a dialog for the new point of interest
         dialog = AddPoint(scene_position, self.test)
+
         dialog.save_point.connect(self.on_point_saved)
         dialog.closed_window.connect(self.on_window_closed)
+
         self.dialogs.append(dialog)
+
         dialog.show()
 
     # Triggered when point of interest pop-up is closed without saving
