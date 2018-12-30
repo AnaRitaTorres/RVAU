@@ -132,8 +132,10 @@ class MainWindow(QMainWindow):
             print(item.text())
 
             # Shows new window to select between video and image
-            dialog = SelectFeed(item.text(), self.test)
+            dialog = SelectFeed(self.maps, item.text(), self.test)
             self.setCentralWidget(dialog)
+        else:
+            print('No item selected')
 
     # Triggered when database window is closed
     def on_database_closed(self):
