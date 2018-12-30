@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
             print(item.text())
 
             # Shows new window to select between video and image
-            dialog = SelectFeed(item, self.test)
+            dialog = SelectFeed(item.text(), self.test)
             self.setCentralWidget(dialog)
 
     # Triggered when database window is closed

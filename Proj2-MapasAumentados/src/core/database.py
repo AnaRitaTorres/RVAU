@@ -52,6 +52,15 @@ def get_map(map_name, maps):
     return None
 
 
+# Get base image information
+def get_base_image(map_entry):
+    filename = map_entry.frontal_image
+
+    for image in map_entry.images:
+        if image.filename == filename:
+            return image
+
+
 # Loads database if it exists and prints their contents
 def load_database():
     empty_map = []

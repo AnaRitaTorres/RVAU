@@ -4,6 +4,7 @@ from PyQt5.QtCore import QTimer
 from gui.graphic_scene import EditorScene
 from core.video import *
 from core.matcher import *
+from core.database import *
 
 from cv2 import *
 
@@ -16,8 +17,10 @@ class MainWindow(QMainWindow):
         # Test mode active
         self.test = test
 
-        # Get Original map
-        self.original_map = original_map
+        # Get base image
+        self.original_image = get_base_image(original_map)
+
+        print(self.original_image.filename)
 
         # Check mode
         self.mode = mode
