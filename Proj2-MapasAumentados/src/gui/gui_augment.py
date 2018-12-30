@@ -5,6 +5,7 @@ from gui.graphic_scene import EditorScene
 from core.video import *
 from core.matcher import *
 from core.database import *
+import time
 
 from cv2 import *
 
@@ -49,8 +50,9 @@ class MainWindow(QMainWindow):
         while True:
             self.update()
             QApplication.processEvents()
-            self.img = captureVideo(cap, self.original_image)
+            self.img = captureVideo(cap, self.original_image, self.test)
             self.editor_scene.display_image(self.img)
+            time.sleep(0.1)
         cap.release()
 
     def configure_window(self):
@@ -92,8 +94,12 @@ class MainWindow(QMainWindow):
         if filename:
             # Read loaded image and display it
             img = cv2.imread(filename)
-            img = matchFeatures(img, self.original_image)['img']
+            arr = matchFeatures(img, self.original_image, self.test)
+            if arr['img'] is not None:
+                img = arr['img']
             img = draw_poi(img)
+            if arr['angle'] is not None:
+                img = draw_compass(img, arr['angle'])
             self.editor_scene.display_image(img)
             self.open_action.setDisabled(True)
 
