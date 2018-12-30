@@ -1,7 +1,8 @@
 import pickle
 import os.path
-from shutil import copy
+import shutil
 from core.utils import *
+from core.detector import *
 
 database_name = 'maps.db'
 points_path = 'POIs\\'
@@ -24,72 +25,126 @@ class Image:
         self.points = points
 
 
+class MapEntry:
+    def __init__(self, name, frontal_image, images):
+        self.name = name
+        self.frontal_image = frontal_image
+        self.images = images
+
+
+def get_map_names(maps):
+    map_names = []
+
+    for map_entry in maps:
+        map_names.append(map_entry.name)
+
+    return map_names
+
+
+def get_map(map_name, maps):
+    for map_entry in maps:
+        if map_name == map_entry.name:
+            return map_entry
+
+    return None
+
 # Loads database if it exists and prints their contents
 def load_database():
+    empty_map = []
     # Check if database exists
     if not os.path.isfile(database_name):
         print("Database doesn't yet exist")
-        return
+        return empty_map
 
     infile = open(database_name, 'rb')
-    images = pickle.load(infile)
+    maps = pickle.load(infile)
     infile.close()
 
-    for img in images:
-        print('\nImage name:', img.filename)
-        features = deserialize_features(img.features)
-        print('Deserialized features:', len(features['k']), len(features['d']), 'points')
+    for map_entry in maps:
+        print('\nMap name:', map_entry.name)
+        print('\nFrontal image of map:', map_entry.frontal_image)
 
-        for poi in img.points:
-            print('Point of Interest:', poi.position_x, poi.position_y, poi.name, poi.images)
+        for img in map_entry.images:
+            print('\nImage name:', img.filename)
+            features = deserialize_features(img.features)
+            print('Deserialized features:', len(features['k']), len(features['d']), 'points')
+
+            for poi in img.points:
+                print('Point of Interest:', poi.position_x, poi.position_y, poi.name, poi.images)
 
     print('\n')
 
+    return maps
+
+
 # Check if database exists and update its contents if it exists
-def update_database(filename, image):
-    images = []
+def update_database(entry_name, filename, images):
+    # List of maps to be added to the database
+    maps = []
+
+    # Creates current map entry
+    map_entry = MapEntry(entry_name, filename, images)
 
     # Check if database exists
     if os.path.isfile(database_name):
+
         # Read database contents
         infile = open(database_name, 'rb')
-        images_loaded = pickle.load(infile)
-        img_exists = False
+        maps_loaded = pickle.load(infile)
 
-        for i in range(len(images_loaded)):
-            # If there is an image in database equal to current one, update it
-            if images_loaded[i].filename == filename:
-                images_loaded[i] = image
-                img_exists = True
-                print('Current image already exists in database')
+        # Boolean used to check if map already exists on the database
+        map_exists = False
 
-        # Append the rest of content
-        images = images + images_loaded
+        # Iterate over maps already on the database
+        for i in range(len(maps_loaded)):
+            # Checks if there is an map in database equal to current one
+            if maps_loaded[i].name == entry_name:
+                # Equal map exists
+                map_exists = True
 
-        # If current image doesn't exist, append it
-        if not img_exists:
-            images.append(image)
+                # Update images of map found on the database
+                maps_loaded[i].images = images
+
+        # Checks after iterating over maps if current map doesn't exist in database
+        if not map_exists:
+            maps_loaded.append(map_entry)
+
+        # Get updated map
+        maps = maps_loaded
     else:
-        # If database doesn't exist, just append current image
-        images.append(image)
+        # If database doesn't exist, just append map entry
+        maps.append(map_entry)
 
-    return images
+    return maps
+
 
 # Saves image to database
-def save_database(filename, features, pois):
+def save_database(entry_name, filename, more_images, features, pois, test):
     # Get points with new file paths
     points = setup_pois(pois)
+
+    images = []
 
     for p in points:
         print('Points', p.name, p.position_x, p.position_x, p.images)
 
+    for img_filename in more_images:
+        # Run SIFT on map image
+        results = runSIFT(img_filename, test)
+
+        new_image = Image(img_filename, results['pts_features'], [])
+
+        images.append(new_image)
+
     # Create image object
     image = Image(filename, features, points)
-    images = update_database(filename, image)
+
+    images.append(image)
+    maps = update_database(entry_name, filename, images)
 
     # Save images to database
     binary_file = open(database_name, mode='wb')
-    pickle.dump(images, binary_file)
+    pickle.dump(maps, binary_file)
     binary_file.close()
 
 
@@ -127,4 +182,11 @@ def copy_images(poi):
 
 # Copy image to Points of Interests folder
 def copy_file(filename):
-    return copy(filename, points_path)
+    img = filename
+    try:
+        img = shutil.copy(filename, points_path)
+    except shutil.SameFileError:
+        print("Copying same file to folder")
+        pass
+
+    return img

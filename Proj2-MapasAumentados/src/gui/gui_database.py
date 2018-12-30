@@ -1,5 +1,5 @@
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5.QtWidgets import QMainWindow, QInputDialog
 from PyQt5.QtCore import Qt, QPointF
 from PyQt5.QtGui import QGuiApplication
 from gui.graphic_scene import EditorScene
@@ -12,9 +12,15 @@ color_poi = (0, 0, 255)
 
 
 # Window showing loaded image. Allows to see feature points and add points of interest
-class MainWindow(QMainWindow):
+class DatabaseWindow(QMainWindow):
+    # Signal main window that window was closed
+    closed_window = QtCore.pyqtSignal()
+
     def __init__(self, test):
         QMainWindow.__init__(self)
+
+        # Additional images
+        self.image_filenames = []
 
         # Test mode active
         self.test = test
@@ -39,8 +45,8 @@ class MainWindow(QMainWindow):
         # Set image canvas as the central widget
         self.setCentralWidget(self.editor_view)
 
-        # The user may open more than one dialog to add points of interest
-        self.dialogs = list()
+        self.dialogs = []
+        self.saving = False
         self.show()
 
     def configure_window(self):
@@ -89,6 +95,12 @@ class MainWindow(QMainWindow):
         self.add_point_action.triggered.connect(self.add_point)
         self.toolbar.addAction(self.add_point_action)
 
+        # More images Option
+        self.more_action = self.toolbar_button('More Images', 'Add More Images of Map', 'Ctrl+M')
+        self.more_action.setDisabled(True)
+        self.more_action.triggered.connect(self.more_images)
+        self.toolbar.addAction(self.more_action)
+
         # Save and Quit Option
         self.save_action = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application', 'Ctrl+S')
         self.save_action.setDisabled(True)
@@ -100,8 +112,10 @@ class MainWindow(QMainWindow):
                                                              'Images (*.png *.jpg)')
         if filename:
             self.load_image(filename)
+
             self.features_action.setDisabled(False)
             self.add_point_action.setDisabled(False)
+            self.more_action.setDisabled(False)
             self.save_action.setDisabled(False)
             self.load_action.setDisabled(True)
 
@@ -122,16 +136,6 @@ class MainWindow(QMainWindow):
 
         # Show message after loading image
         self.statusBar().showMessage('Loaded image successfully!')
-
-    # Triggered if Save and Quit option is selected on toolbar
-    def save_and_quit(self):
-        # Saves Points of Interest in file
-        self.statusBar().showMessage('Saving points of interest...')
-        save_database(self.map_name, self.features_info, self.pois)
-
-        # Quits Application
-        self.statusBar().showMessage('Quitting Application...')
-        quit()
 
     # Triggered if features options is selected on toolbar
     def select_features(self, toggled: bool):
@@ -157,6 +161,44 @@ class MainWindow(QMainWindow):
         # Canvas is now clickable
         self.editor_scene.clickable = True
 
+    def more_images(self):
+        filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
+                                                             'Images (*.png *.jpg)')
+        if filename:
+            self.image_filenames.append(filename)
+
+            # Show message after loading image
+            self.statusBar().showMessage('Added image successfully!')
+
+
+    # Triggered if Save and Quit option is selected on toolbar
+    def save_and_quit(self):
+        # Saves Points of Interest in file
+        self.statusBar().showMessage('Saving entry to database...')
+
+        if len(self.pois) > 0:
+            # Creates a dialog for the new point of interest
+            entry_name, ok = QInputDialog.getText(self, 'Saving Entry', 'Enter entry name:')
+
+            if ok:
+                self.statusBar().showMessage('Saving entry to database')
+                save_database(entry_name, self.map_name, self.image_filenames, self.features_info, self.pois, self.test)
+
+                # Quits Application
+                self.statusBar().showMessage('Quitting Application...')
+
+                self.saving = True
+                self.closed_window.emit()
+                self.close()
+            else:
+                self.statusBar().showMessage('Canceled saving entry')
+        else:
+            info_box = QtWidgets.QMessageBox(self)
+            info_box.setWindowTitle("Error")
+            info_box.setIcon(QtWidgets.QMessageBox.Critical)
+            info_box.setText("No points of interest added!")
+            return info_box.exec()
+
     # Called when user tries to add point of interest. Gives clicked position
     def on_point_added(self, scene_position: QPointF):
         # Creates a dialog for the new point of interest
@@ -165,9 +207,7 @@ class MainWindow(QMainWindow):
         dialog.save_point.connect(self.on_point_saved)
         dialog.closed_window.connect(self.on_window_closed)
 
-        self.dialogs.append(dialog)
-
-        dialog.show()
+        dialog.exec_()
 
     # Triggered when point of interest pop-up is closed without saving
     def on_window_closed(self):
@@ -192,14 +232,15 @@ class MainWindow(QMainWindow):
 
     # Close event triggered when user tries to close main window
     def closeEvent(self, event):
-        # Shows pop-up asking user whether he wants to close without saving
-        reply = QtWidgets.QMessageBox.question(self, 'Message',
-                                               "You haven't saved the map entry yet!<br>"
-                                               "Are you sure you want to close?", QtWidgets.QMessageBox.Yes |
-                                               QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if not self.saving:
+            # Shows pop-up asking user whether he wants to close without saving
+            reply = QtWidgets.QMessageBox.question(self, 'Message',
+                                                   "You haven't saved the map entry yet!<br>"
+                                                   "Are you sure you want to close?", QtWidgets.QMessageBox.Yes |
+                                                   QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
 
-        # Accept or ignore close event depending on user's response
-        if reply == QtWidgets.QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
+            # Accept or ignore close event depending on user's response
+            if reply == QtWidgets.QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()

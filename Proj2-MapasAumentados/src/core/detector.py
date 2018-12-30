@@ -3,7 +3,7 @@ from core.utils import *
 
 
 # A function to run the SIFT algorithm in the map image(s)
-def runSIFT(map, name, test):
+def runSIFT(map, test):
     # Read map image and convert it to grayscale
     img = imread(map)
     grayscaled = cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -34,7 +34,6 @@ def read_image(map_name):
     for m in os.listdir('..\\img\\'):
         # match map
         if re.match("" + map_name + r"(\w)*\.\w\w\w", m):
-            #
             file_path = "..\\img\\" + m
             paths.append(file_path)
 

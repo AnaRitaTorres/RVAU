@@ -1,11 +1,11 @@
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QTextEdit, QWidget
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QWidget, QDialog
 from PyQt5.QtCore import Qt
 from core.database import *
 
 
 # Window triggered when user tries to add Point of Interest on map
-class AddPoint(QMainWindow):
+class AddPoint(QDialog):
     # Signal main window that point is being saved
     save_point = QtCore.pyqtSignal(object)
 
@@ -17,6 +17,9 @@ class AddPoint(QMainWindow):
 
         # Is in test mode
         self.test = test
+
+        # Valid point of interest
+        self.valid = False
 
         # Images uploaded by user
         self.images = []
@@ -43,13 +46,12 @@ class AddPoint(QMainWindow):
         position_label.setAlignment(Qt.AlignCenter)
 
         # Name label
-        name_label = QLabel('Name')
+        name_label = QLabel('Name:')
         # Name input
         self.name_edit = QLineEdit()
 
         # Button to upload image
         upload_btn = QPushButton('Upload Image', self)
-        upload_btn.adjustSize()
         upload_btn.clicked.connect(self.add_image)
 
         # Label showing number of uploaded images
@@ -79,9 +81,7 @@ class AddPoint(QMainWindow):
         self.layout.addWidget(self.confirm_btn)
 
         # Set Central Widget
-        window = QWidget()
-        window.setLayout(self.layout)
-        self.setCentralWidget(window)
+        self.setLayout(self.layout)
 
     # Triggered when user tries to add image to point of interest
     def add_image(self):
@@ -117,6 +117,8 @@ class AddPoint(QMainWindow):
         if self.test:
             print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
 
+        self.valid = True
+
         # Signal main window that this window closed
         point = PointOfInterest(self.position_x, self.position_y, self.name_edit.text(), self.images)
         self.save_point.emit(point)
@@ -124,11 +126,11 @@ class AddPoint(QMainWindow):
 
     # Sets up window
     def configure_window(self):
-        self.setGeometry(300, 300, 280, 170)
         self.setWindowTitle('Point of Interest')
         self.show()
 
     # Triggered when user tries to close this window
     def closeEvent(self, event):
-        self.closed_window.emit()
-        event.accept()
+        if not self.valid:
+            self.closed_window.emit()
+            event.accept()
