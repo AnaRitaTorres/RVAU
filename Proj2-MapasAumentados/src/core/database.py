@@ -25,6 +25,7 @@ class Image:
         self.points = points
 
 
+# Represents a Map. Initialize with name of the entry, filename of the frontal image and set of one or more images
 class MapEntry:
     def __init__(self, name, frontal_image, images):
         self.name = name
@@ -32,6 +33,7 @@ class MapEntry:
         self.images = images
 
 
+# Returns a list with the names of the maps currently stored in database
 def get_map_names(maps):
     map_names = []
 
@@ -41,12 +43,14 @@ def get_map_names(maps):
     return map_names
 
 
+# Returns map information from the database given a map name and a set of maps
 def get_map(map_name, maps):
     for map_entry in maps:
         if map_name == map_entry.name:
             return map_entry
 
     return None
+
 
 # Loads database if it exists and prints their contents
 def load_database():

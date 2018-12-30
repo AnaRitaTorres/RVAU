@@ -1,4 +1,3 @@
-import re
 from core.utils import *
 
 
@@ -23,19 +22,3 @@ def runSIFT(map, test):
         print("Calculated " + str(len(keypoints)) + " keypoints in " + map)
 
     return {'img_features': points_img, 'pts_features': features}
-
-
-# Get array of maps matching map name
-def read_image(map_name):
-    # Array for all maps in the img folder
-    paths = []
-
-    # For every map in the img folder, match with the map
-    for m in os.listdir('..\\img\\'):
-        # match map
-        if re.match("" + map_name + r"(\w)*\.\w\w\w", m):
-            file_path = "..\\img\\" + m
-            paths.append(file_path)
-
-    return paths
-

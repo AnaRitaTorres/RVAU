@@ -16,7 +16,7 @@ def serialize_features(points_list, descriptors_list):
     return features
 
 
-# Deserialize Keypoints and their Descriptors
+# Deserialize Key Points and their Descriptors
 def deserialize_features(features):
     key_points = []
     descriptors = []

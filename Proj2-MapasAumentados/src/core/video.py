@@ -3,8 +3,9 @@ from core.matcher import *
 
 space_key = 32 
 esc_key = 27 
- 
-# Returns a stream of video from webcamera 
+
+
+# Returns a stream of video from webc amera
 def captureVideo(cap): 
  
     # Read next frame 
@@ -15,8 +16,8 @@ def captureVideo(cap):
 
     # Resize image a bit
     height, width, depth = frame.shape
-    newheight = 1.2 * height
-    newwidth =  1.2 * width
-    newframe = resize(frame, (int(newwidth), int(newheight)))
+    new_height = 1.2 * height
+    new_width = 1.2 * width
+    new_frame = resize(frame, (int(new_width), int(new_height)))
  
-    return newframe
+    return new_frame

@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
                                                              'Images (*.png *.jpg)')
         if filename:
-            # Read original image
+            # Read loaded image and display it
             img = cv2.imread(filename)
             img = draw_poi(img)
             self.editor_scene.display_image(img)
