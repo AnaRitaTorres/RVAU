@@ -181,12 +181,46 @@ class DatabaseWindow(QMainWindow):
         self.statusBar().showMessage('Saving entry to database...')
 
         if len(self.pois) > 0:
-            # Creates a dialog for the new point of interest
-            entry_name, ok = QInputDialog.getText(self, 'Saving Entry', 'Enter entry name:')
+            self.get_user_inputs()
+        else:
+            # Show error if no points of interest were added
+            info_box = QtWidgets.QMessageBox(self)
+            info_box.setWindowTitle("Error")
+            info_box.setIcon(QtWidgets.QMessageBox.Critical)
+            info_box.setText("No points of interest added!")
+            return info_box.exec()
 
-            if ok:
+    # Get user inputs
+    def get_user_inputs(self):
+        # Creates a dialog for the new point of interest
+        entry_name, ok_name = QInputDialog.getText(self, 'Saving Entry...', 'Enter map name:')
+
+        if ok_name:
+            # Checks if name entry is valid
+            if entry_name == "":
+                # Show error if no points of interest were added
+                info_box = QtWidgets.QMessageBox(self)
+                info_box.setWindowTitle("Error")
+                info_box.setIcon(QtWidgets.QMessageBox.Critical)
+                info_box.setText("Name invalid!")
+                self.statusBar().showMessage('Error saving entry')
+                return info_box.exec()
+
+            map_scale, ok_scale = QInputDialog.getText(self, 'Saving Entry...', 'How many meters shown per 1cm? (int)')
+
+            if ok_scale:
+                if not map_scale.isnumeric():
+                    # Show error if no points of interest were added
+                    info_box = QtWidgets.QMessageBox(self)
+                    info_box.setWindowTitle("Error")
+                    info_box.setIcon(QtWidgets.QMessageBox.Critical)
+                    info_box.setText("Invalid scale!")
+                    self.statusBar().showMessage('Error saving entry')
+                    return info_box.exec()
+
+                print(entry_name, map_scale)
                 self.statusBar().showMessage('Saving entry to database')
-                save_database(entry_name, self.map_name, self.image_filenames, self.features_info, self.pois, self.test)
+                save_database(entry_name, map_scale, self.map_name, self.image_filenames, self.features_info, self.pois, self.test)
 
                 # Quits Application
                 self.statusBar().showMessage('Quitting Application...')
@@ -197,12 +231,7 @@ class DatabaseWindow(QMainWindow):
             else:
                 self.statusBar().showMessage('Canceled saving entry')
         else:
-            # Show error if no points of interest were added
-            info_box = QtWidgets.QMessageBox(self)
-            info_box.setWindowTitle("Error")
-            info_box.setIcon(QtWidgets.QMessageBox.Critical)
-            info_box.setText("No points of interest added!")
-            return info_box.exec()
+            self.statusBar().showMessage('Canceled saving entry')
 
     # Called when user tries to add point of interest. Gives clicked position
     def on_point_added(self, scene_position: QPointF):

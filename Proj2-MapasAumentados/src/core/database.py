@@ -25,10 +25,12 @@ class Image:
         self.points = points
 
 
-# Represents a Map. Initialize with name of the entry, filename of the frontal image and set of one or more images
+# Represents a Map. Initialize with name of the entry, map scale and filename of the frontal image
+# Also associated to a set of one or more images
 class MapEntry:
-    def __init__(self, name, frontal_image, images):
+    def __init__(self, name, scale, frontal_image, images):
         self.name = name
+        self.scale = scale
         self.frontal_image = frontal_image
         self.images = images
 
@@ -75,6 +77,7 @@ def load_database():
 
     for map_entry in maps:
         print('\nMap name:', map_entry.name)
+        print('\nMap scale:', map_entry.scale)
         print('\nFrontal image of map:', map_entry.frontal_image)
 
         for img in map_entry.images:
@@ -91,12 +94,12 @@ def load_database():
 
 
 # Check if database exists and update its contents if it exists
-def update_database(entry_name, filename, images):
+def update_database(entry_name, map_scale, filename, images):
     # List of maps to be added to the database
     maps = []
 
     # Creates current map entry
-    map_entry = MapEntry(entry_name, filename, images)
+    map_entry = MapEntry(entry_name, map_scale, filename, images)
 
     # Check if database exists
     if os.path.isfile(database_name):
@@ -131,8 +134,8 @@ def update_database(entry_name, filename, images):
     return maps
 
 
-# Saves image to database
-def save_database(entry_name, filename, more_images, features, pois, test):
+# Saves map to database
+def save_database(entry_name, map_scale, filename, more_images, features, pois, test):
     # Get points with new file paths
     points = setup_pois(pois)
 
@@ -153,7 +156,7 @@ def save_database(entry_name, filename, more_images, features, pois, test):
     image = Image(filename, features, points)
 
     images.append(image)
-    maps = update_database(entry_name, filename, images)
+    maps = update_database(entry_name, map_scale, filename, images)
 
     # Save images to database
     binary_file = open(database_name, mode='wb')
@@ -200,6 +203,5 @@ def copy_file(filename):
         img = shutil.copy(filename, points_path)
     except shutil.SameFileError:
         print("Copying same file to folder")
-        pass
 
     return img

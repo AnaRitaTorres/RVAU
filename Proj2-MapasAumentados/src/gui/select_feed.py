@@ -9,11 +9,12 @@ dialogs = []
 
 # Allows to select between image and video feed
 class SelectFeed(QWidget):
-    def __init__(self, item, test):
+    def __init__(self, maps, item, test):
         super(SelectFeed, self).__init__()
 
         self.test = test
 
+        self.maps = maps
         self.item = item
 
         self.init_widgets()
@@ -42,18 +43,14 @@ class SelectFeed(QWidget):
 
     # Triggered when image button is clicked
     def init_image(self):
-        maps = load_database()
-        map_entry = get_map(self.item, maps)
+        map_entry = get_map(self.item, self.maps)
         window = MainWindow('image', map_entry, self.test)
         dialogs.append(window)
         window.show()
-        self.close()
 
     # Triggered when video button is clicked
     def init_video(self):
-        maps = load_database()
-        map_entry = get_map(self.item, maps)
+        map_entry = get_map(self.item, self.maps)
         window = MainWindow('video', map_entry, self.test)
         dialogs.append(window)
         window.show()
-        self.close()
