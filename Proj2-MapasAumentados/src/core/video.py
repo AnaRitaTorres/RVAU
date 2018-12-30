@@ -6,13 +6,14 @@ esc_key = 27
 
 
 # Returns a stream of video from webc amera
-def captureVideo(cap): 
+def captureVideo(cap, original_image): 
  
     # Read next frame 
     ret, frame = cap.read() 
  
     # Draw Center
     frame = draw_poi(frame)
+    frame = matchFeatures(frame, original_image)['img']
 
     # Resize image a bit
     height, width, depth = frame.shape

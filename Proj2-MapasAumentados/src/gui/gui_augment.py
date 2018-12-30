@@ -20,8 +20,6 @@ class MainWindow(QMainWindow):
         # Get base image
         self.original_image = get_base_image(original_map)
 
-        print(self.original_image.filename)
-
         # Check mode
         self.mode = mode
 
@@ -51,7 +49,7 @@ class MainWindow(QMainWindow):
         while True:
             self.update()
             QApplication.processEvents()
-            self.img = captureVideo(cap)
+            self.img = captureVideo(cap, self.original_image)
             self.editor_scene.display_image(self.img)
         cap.release()
 
@@ -94,6 +92,7 @@ class MainWindow(QMainWindow):
         if filename:
             # Read loaded image and display it
             img = cv2.imread(filename)
+            img = matchFeatures(img, self.original_image)['img']
             img = draw_poi(img)
             self.editor_scene.display_image(img)
             self.open_action.setDisabled(True)

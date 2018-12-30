@@ -124,6 +124,9 @@ class DatabaseWindow(QMainWindow):
         img = cv2.imread(filename)
 
         # Run SIFT on map image
+        #results = runSIFT(filename, self.test)
+
+        # Run ORB on map image
         results = runSIFT(filename, self.test)
 
         self.map_name = filename
