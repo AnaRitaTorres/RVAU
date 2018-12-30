@@ -6,6 +6,8 @@ from core.database import *
 
 dialogs = []
 
+
+# Allows to select between image and video feed
 class SelectFeed(QWidget):
     def __init__(self, item, test):
         super(SelectFeed, self).__init__()
@@ -13,23 +15,32 @@ class SelectFeed(QWidget):
         self.test = test
 
         self.item = item
+
+        self.init_widgets()
+
+    # Sets up application layout
+    def init_widgets(self):
         font = QtGui.QFont("Calibri", 15, QtGui.QFont.Bold)
 
-        image = QPushButton("IMAGE")
-        image.clicked.connect(self.init_image)
-        image.setFont(font)
-        image.setStyleSheet("QPushButton { height: 60px; padding: 30px; }")
+        # Image button
+        image_btn = QPushButton("IMAGE")
+        image_btn.clicked.connect(self.init_image)
+        image_btn.setFont(font)
+        image_btn.setStyleSheet("QPushButton { height: 60px; padding: 30px; }")
 
-        video = QPushButton("VIDEO")
-        video.clicked.connect(self.init_video)
-        video.setFont(font)
-        video.setStyleSheet("QPushButton { height: 60px; padding: 30px; }")
+        # Video button
+        video_btn = QPushButton("VIDEO")
+        video_btn.clicked.connect(self.init_video)
+        video_btn.setFont(font)
+        video_btn.setStyleSheet("QPushButton { height: 60px; padding: 30px; }")
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(image)
-        hbox.addWidget(video)
-        self.setLayout(hbox)
+        # Set up main layout
+        main_layout = QHBoxLayout()
+        main_layout.addWidget(image_btn)
+        main_layout.addWidget(video_btn)
+        self.setLayout(main_layout)
 
+    # Triggered when image button is clicked
     def init_image(self):
         maps = load_database()
         map_entry = get_map(self.item, maps)
@@ -38,6 +49,7 @@ class SelectFeed(QWidget):
         window.show()
         self.close()
 
+    # Triggered when video button is clicked
     def init_video(self):
         maps = load_database()
         map_entry = get_map(self.item, maps)

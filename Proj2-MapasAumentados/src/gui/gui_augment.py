@@ -32,13 +32,11 @@ class MainWindow(QMainWindow):
 
         # Set image canvas as the central widget
         self.setCentralWidget(self.editor_view)
-
-        # The user may open more than one dialog to add points of interest
-        self.dialogs = list()
         self.show()
         
         # Display loaded image
         if self.mode == 'image':
+            # Add toolbar with option to load image
             self.toolbar = self.addToolBar('Main Toolbar')
             self.configure_toolbar()
         elif self.mode == 'video':
@@ -86,6 +84,7 @@ class MainWindow(QMainWindow):
         self.open_action.triggered.connect(self.open_image)
         self.toolbar.addAction(self.open_action)
 
+    # Triggered when Load Image option on the toolbar is selected
     def open_image(self):
         filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
                                                              'Images (*.png *.jpg)')
@@ -96,5 +95,7 @@ class MainWindow(QMainWindow):
             self.editor_scene.display_image(img)
             self.open_action.setDisabled(True)
 
+    # Triggered when window is closed
     def closeEvent(self, event):
+        # Quit application
         quit()

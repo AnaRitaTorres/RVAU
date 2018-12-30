@@ -161,7 +161,9 @@ class DatabaseWindow(QMainWindow):
         # Canvas is now clickable
         self.editor_scene.clickable = True
 
+    # Triggered if More Images option is selected on toolbar
     def more_images(self):
+        self.statusBar().showMessage('Adding map image...')
         filename, __ = QtWidgets.QFileDialog.getOpenFileName(self, 'Load Image', os.environ.get('HOME'),
                                                              'Images (*.png *.jpg)')
         if filename:
@@ -169,7 +171,9 @@ class DatabaseWindow(QMainWindow):
 
             # Show message after loading image
             self.statusBar().showMessage('Added image successfully!')
-
+        else:
+            # Show message if user canceled
+            self.statusBar().showMessage('Canceled adding map image')
 
     # Triggered if Save and Quit option is selected on toolbar
     def save_and_quit(self):
@@ -193,6 +197,7 @@ class DatabaseWindow(QMainWindow):
             else:
                 self.statusBar().showMessage('Canceled saving entry')
         else:
+            # Show error if no points of interest were added
             info_box = QtWidgets.QMessageBox(self)
             info_box.setWindowTitle("Error")
             info_box.setIcon(QtWidgets.QMessageBox.Critical)

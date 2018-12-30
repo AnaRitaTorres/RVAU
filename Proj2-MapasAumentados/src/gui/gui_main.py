@@ -11,57 +11,74 @@ class MainWindow(QMainWindow):
     def __init__(self, maps, test):
         super().__init__()
 
+        # Test mode
         self.test = test
+
+        # Maps loaded from database
         self.maps = maps
-        self.list_maps = QListWidget()
 
-        self.selected_item = None
-
-        self.initial_widgets()
+        self.init_widgets()
         self.configure_window()
-
-        # Prevent dialogs from being garbage collected
-        self.dialogs = []
 
         self.show()
 
-    def initial_widgets(self):
-        self.fill_list()
+    # Shows widgets on the main layout
+    def init_widgets(self):
         self.init_buttons()
+        self.init_list()
 
-        hbox = QHBoxLayout()
-        vbox_list = QVBoxLayout()
+        # Set up main layout
+        self.main_layout = QHBoxLayout()
+        self.main_layout.addLayout(self.list_box)
+        self.main_layout.addSpacing(15)
+        self.main_layout.addLayout(self.btn_box)
+
+        # Set main layout as central widget
+        window = QWidget()
+        window.setLayout(self.main_layout)
+        self.setCentralWidget(window)
+
+    # Fill list and add it to vertical layout (list_box)
+    def init_list(self):
+        # Map list widget
+        self.list_maps = QListWidget()
+
+        # Fill map list
+        self.fill_list()
+
+        # Set up list label
         maps_label = QLabel("List of maps on database:")
         font = QtGui.QFont("Calibri", 15, QtGui.QFont.Bold)
         maps_label.setFont(font)
-        vbox_list.addWidget(maps_label)
 
+        # Add widgets to list vertical layout
+        self.list_box = QVBoxLayout()
+        self.list_box.addWidget(maps_label)
+        self.list_box.addWidget(self.list_maps)
+
+    def fill_list(self):
         if len(self.maps) == 0:
+            # If maps list is empty, add empty element and disable list
             item = QListWidgetItem()
             item.setText("No map entries on the database yet.")
             self.list_maps.addItem(item)
             self.list_maps.setDisabled(True)
+        else:
+            # If maps list is not empty, fill it with map entries and enable it
+            self.list_maps.setDisabled(False)
 
-        vbox_list.addWidget(self.list_maps)
-        hbox.addLayout(vbox_list)
-        hbox.addSpacing(15)
-        hbox.addLayout(self.vbox)
+            # Fill maps list
+            map_names = get_map_names(self.maps)
 
-        window = QWidget()
-        window.setLayout(hbox)
-        self.setCentralWidget(window)
+            # Fill map entries
+            for map_entry in map_names:
+                self.list_maps.addItem(map_entry)
 
-    def fill_list(self):
-        # Fill maps list
-        map_names = get_map_names(self.maps)
-
-        for map_entry in map_names:
-            self.list_maps.addItem(map_entry)
-
+    # Init buttons and add them to vertical layout (btn_box)
     def init_buttons(self):
-        self.vbox = QVBoxLayout()
+        self.btn_box = QVBoxLayout()
 
-        # Add buttons
+        # Add buttons to manage map list
         add_button = QPushButton("Add Entry")
         add_button.clicked.connect(self.add_entry)
 
@@ -70,23 +87,25 @@ class MainWindow(QMainWindow):
 
         remove_button = QPushButton("Remove Entry")
 
+        # Set buttons style (height and padding)
         add_button.setStyleSheet("QPushButton { height: 50px; padding: 10px; }")
         select_button.setStyleSheet("QPushButton { height: 50px; padding: 10px; }")
         remove_button.setStyleSheet("QPushButton { height: 60px; padding: 10px; }")
 
+        # Set buttons font
         font = QtGui.QFont("Calibri", 15, QtGui.QFont.Bold)
         add_button.setFont(font)
         select_button.setFont(font)
         remove_button.setFont(font)
 
-        self.vbox.setSpacing(10)
-        self.vbox.addWidget(add_button)
-        self.vbox.addWidget(select_button)
-        self.vbox.addWidget(remove_button)
-        self.vbox.addStretch(1)
+        # Add widgets to buttons vertical layout
+        self.btn_box.setSpacing(10)
+        self.btn_box.addWidget(add_button)
+        self.btn_box.addWidget(select_button)
+        self.btn_box.addWidget(remove_button)
+        self.btn_box.addStretch(1)
 
-        return self.vbox
-
+    # Set up main window
     def configure_window(self):
         # Sets window title
         self.setWindowTitle('Maps')
@@ -95,27 +114,36 @@ class MainWindow(QMainWindow):
         screen_size = QtGui.QGuiApplication.primaryScreen().availableSize()
         self.resize(int(screen_size.width() * 4 / 5), int(screen_size.height() * 4 / 5))
 
+    # Triggered when add entry button is clicked
     def add_entry(self):
+        # Init database window
         window = DatabaseWindow(self.test)
+        # Signal when window is closed to update list
         window.closed_window.connect(self.on_database_closed)
         dialogs.append(window)
         window.show()
 
+    # Triggered when an item is selected
     def select_entry(self):
         row = self.list_maps.currentRow()
-        self.selected_item = self.list_maps.item(row)
+        item = self.list_maps.item(row)
 
-        if self.selected_item is not None:
-            print(self.selected_item.text())
-            dialog = SelectFeed(self.selected_item, self.test)
+        if item is not None:
+            print(item.text())
+
+            # Shows new window to select between video and image
+            dialog = SelectFeed(item, self.test)
             self.setCentralWidget(dialog)
 
+    # Triggered when database window is closed
     def on_database_closed(self):
-        self.list_maps.setDisabled(False)
-
+        # Update map entries
         self.maps = load_database()
+
+        # Clear list
         self.list_maps.clear()
 
+        # Update list items
         self.fill_list()
         self.update()
         QApplication.processEvents()
