@@ -9,6 +9,8 @@ dialogs = []
 
 # Allows to select between image and video feed
 class SelectFeed(QWidget):
+    closed_window = QtCore.pyqtSignal()
+
     def __init__(self, maps, item, test):
         super(SelectFeed, self).__init__()
 
@@ -47,6 +49,8 @@ class SelectFeed(QWidget):
         window = MainWindow('image', map_entry, self.test)
         dialogs.append(window)
         window.show()
+        self.closed_window.emit()
+        self.close()
 
     # Triggered when video button is clicked
     def init_video(self):
@@ -54,3 +58,5 @@ class SelectFeed(QWidget):
         window = MainWindow('video', map_entry, self.test)
         dialogs.append(window)
         window.show()
+        self.closed_window.emit()
+        self.close()
