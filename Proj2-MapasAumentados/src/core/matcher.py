@@ -78,8 +78,10 @@ def matchFeatures(image, original_image, test):
     for m,n in matches:
         
         # Filter out bad matches
-        if m.distance < 0.5 * n.distance:
+        if m.distance < 0.7 * n.distance:
             good.append(m)
+
+    matches.clear()
 
     # If there are at least MIN_MATCH_COUNT matches
     if len(good)>MIN_MATCH_COUNT:
@@ -95,13 +97,17 @@ def matchFeatures(image, original_image, test):
         h,w,depth = original_img.shape
 
         # Get new src and destination points
-        pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-        dst = perspectiveTransform(pts,M)
+        
+        try:
+            pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+            dst = perspectiveTransform(pts,M)
 
-        # Redraw orignal image to show where the test image is
-        image = polylines(image, [np.int32(dst)],True,255,3, LINE_AA)
+            # Redraw orignal image to show where the test image is
+            image = polylines(image, [np.int32(dst)],True,255,3, LINE_AA)
 
-        return {'img': image, 'pts': pts, 'dst': dst, 'angle': calculateAngle(dst[1][0], dst[0][0])}
+            return {'img': image, 'pts': pts, 'dst': dst, 'angle': calculateAngle(dst[1][0], dst[0][0])}
+        except:
+            return {'img':image, 'pts': None, 'dst': None, 'angle': None}
     # Not enough good matches
     else:
         if test:
