@@ -6,6 +6,7 @@ from PyQt5.Qt import Qt
 from core.video import *
 from core.matcher import *
 from core.database import *
+import time
 
 from cv2 import *
 
@@ -20,8 +21,6 @@ class MainWindow(QMainWindow):
 
         # Get base image
         self.original_image = get_base_image(original_map)
-
-        print(self.original_image.filename)
 
         # Check mode
         self.mode = mode
@@ -44,13 +43,14 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
         cap = VideoCapture(0)
-        self.img = captureVideo(cap)
+        self.img = captureVideo(cap, self.original_image, self.test)
         self.display_image(self.img)
         while True:
             self.update()
             QApplication.processEvents()
-            self.img = captureVideo(cap)
+            self.img = captureVideo(cap, self.original_image, self.test)
             self.update_image(self.img)
+            time.sleep(0.1)
         cap.release()
 
     def configure_window(self):
@@ -99,9 +99,15 @@ class MainWindow(QMainWindow):
                                                              'Images (*.png *.jpg)')
         if filename:
             # Read loaded image and display it
-            self.img = cv2.imread(filename)
-            self.img = draw_poi(self.img)
-            self.display_image(self.img)
+            img = cv2.imread(filename)
+            arr = matchFeatures(img, self.original_image, self.test)
+            if arr['img'] is not None:
+                img = arr['img']
+            img = draw_poi(img)
+            if arr['angle'] is not None:
+                img = draw_compass(img, arr['angle'])
+
+            self.display_image(img)
             self.open_action.setDisabled(True)
 
     def quit_application(self):

@@ -124,6 +124,9 @@ class DatabaseWindow(QMainWindow):
         img = cv2.imread(filename)
 
         # Run SIFT on map image
+        #results = runSIFT(filename, self.test)
+
+        # Run ORB on map image
         results = runSIFT(filename, self.test)
 
         self.map_name = filename
@@ -208,8 +211,9 @@ class DatabaseWindow(QMainWindow):
 
             map_scale, ok_scale = QInputDialog.getText(self, 'Saving Entry...', 'How many meters shown per 1cm? (int)')
 
+            
             if ok_scale:
-                if not map_scale.isnumeric():
+                if not (float(map_scale) or int(map_scale)):
                     # Show error if no points of interest were added
                     info_box = QtWidgets.QMessageBox(self)
                     info_box.setWindowTitle("Error")
