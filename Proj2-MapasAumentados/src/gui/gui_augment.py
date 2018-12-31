@@ -103,14 +103,12 @@ class MainWindow(QMainWindow):
             arr = matchFeatures(img, self.original_image, self.test)
             if arr['img'] is not None:
                 img = arr['img']
-            img = draw_poi(img)
             if arr['angle'] is not None:
                 img = draw_compass(img, arr['angle'])
-
-            self.display_image(img)
             if arr['matrix'] is not None:
-                 get_pois(self.original_image.points,arr['matrix'])
-                # TODO: Fazer aqui pontos de interesse
+                p_arr = get_pois(self.original_image.points,arr['matrix'])
+                img = draw_poi(img, p_arr)
+            self.display_image(img)
             self.open_action.setDisabled(True)
 
     def quit_application(self):
@@ -185,7 +183,6 @@ class MainWindow(QMainWindow):
 
         self.image_poi = QLabel()
         point_of_interest = self.original_image.points[0].images[0]
-        print(point_of_interest)
         pixmap = QtGui.QPixmap(point_of_interest)
         self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
 
