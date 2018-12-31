@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.fill_list()
 
         # Set up list label
-        maps_label = QLabel("List of maps on database:")
+        maps_label = QLabel("Choose a map to augment:")
         font = QtGui.QFont("Calibri", 15, QtGui.QFont.Bold)
         maps_label.setFont(font)
 
@@ -79,36 +79,31 @@ class MainWindow(QMainWindow):
         self.btn_box = QVBoxLayout()
 
         # Add buttons to manage map list
-        add_button = QPushButton("Add Entry")
+        add_button = QPushButton("ADD MAP")
         add_button.clicked.connect(self.add_entry)
 
-        select_button = QPushButton("Select Entry")
+        select_button = QPushButton("SELECT MAP")
         select_button.clicked.connect(self.select_entry)
-
-        remove_button = QPushButton("Remove Entry")
 
         # Set buttons style (height and padding)
         add_button.setStyleSheet("QPushButton { height: 50px; padding: 10px; }")
         select_button.setStyleSheet("QPushButton { height: 50px; padding: 10px; }")
-        remove_button.setStyleSheet("QPushButton { height: 60px; padding: 10px; }")
 
         # Set buttons font
         font = QtGui.QFont("Calibri", 15, QtGui.QFont.Bold)
         add_button.setFont(font)
         select_button.setFont(font)
-        remove_button.setFont(font)
 
         # Add widgets to buttons vertical layout
         self.btn_box.setSpacing(10)
         self.btn_box.addWidget(add_button)
         self.btn_box.addWidget(select_button)
-        self.btn_box.addWidget(remove_button)
         self.btn_box.addStretch(1)
 
     # Set up main window
     def configure_window(self):
         # Sets window title
-        self.setWindowTitle('Maps')
+        self.setWindowTitle('Augmenting Maps')
 
         # Resizes window
         screen_size = QtGui.QGuiApplication.primaryScreen().availableSize()
@@ -129,19 +124,21 @@ class MainWindow(QMainWindow):
         item = self.list_maps.item(row)
 
         if item is not None:
-            print(item.text())
+            if self.test:
+                print('Selected map:', item.text(), '\n')
 
             # Shows new window to select between video and image
             dialog = SelectFeed(self.maps, item.text(), self.test)
             dialog.closed_window.connect(self.on_widget_closed)
             self.setCentralWidget(dialog)
         else:
-            print('No item selected')
+            if self.test:
+                print('No map selected')
 
     # Triggered when database window is closed
     def on_database_closed(self):
         # Update map entries
-        self.maps = load_database()
+        self.maps = load_database(self.test)
 
         # Clear list
         self.list_maps.clear()
@@ -154,4 +151,3 @@ class MainWindow(QMainWindow):
     # Triggered when selected feed is closed
     def on_widget_closed(self):
         self.close()
-

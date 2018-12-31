@@ -18,14 +18,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Sets up a map and its points of interest")
     parser.add_argument('-t', '--test', dest='test', action='store_true')
 
-    maps = load_database()
-
     arguments = parser.parse_args()
 
+    test = False
     # if test flag detected
     if arguments.test:
         print('Starting in Test Mode!')
+        test = True
+
+    maps = load_database(test)
 
     app = QApplication(sys.argv)
-    window = MainWindow(maps, arguments.test)
+    window = MainWindow(maps, test)
     sys.exit(app.exec_())

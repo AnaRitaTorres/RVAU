@@ -64,17 +64,22 @@ def get_base_image(map_entry):
 
 
 # Loads database if it exists and prints their contents
-def load_database():
+def load_database(test):
     empty_map = []
     # Check if database exists
     if not os.path.isfile(database_name):
-        print("Database doesn't yet exist")
+        if test:
+            print("\nDatabase doesn't yet exist.\n")
         return empty_map
 
     infile = open(database_name, 'rb')
     maps = pickle.load(infile)
     infile.close()
 
+    if test and maps:
+        print("\nSuccessfully loaded database!\n")
+
+    '''
     for map_entry in maps:
         print('\nMap name:', map_entry.name)
         print('\nMap scale:', map_entry.scale)
@@ -89,12 +94,13 @@ def load_database():
                 print('Point of Interest:', poi.position_x, poi.position_y, poi.name, poi.images)
 
     print('\n')
+    '''
 
     return maps
 
 
 # Check if database exists and update its contents if it exists
-def update_database(entry_name, map_scale, filename, images):
+def update_database(entry_name, map_scale, filename, images, test):
     # List of maps to be added to the database
     maps = []
 
@@ -115,6 +121,9 @@ def update_database(entry_name, map_scale, filename, images):
         for i in range(len(maps_loaded)):
             # Checks if there is an map in database equal to current one
             if maps_loaded[i].name == entry_name:
+                if test:
+                    print("Found equal map on the database. Will update its contents")
+
                 # Equal map exists
                 map_exists = True
 
@@ -123,11 +132,16 @@ def update_database(entry_name, map_scale, filename, images):
 
         # Checks after iterating over maps if current map doesn't exist in database
         if not map_exists:
+            if test:
+                print("Added map entry to database")
             maps_loaded.append(map_entry)
 
         # Get updated map
         maps = maps_loaded
     else:
+        if test:
+            print("Added map entry to database")
+
         # If database doesn't exist, just append map entry
         maps.append(map_entry)
 
@@ -137,14 +151,17 @@ def update_database(entry_name, map_scale, filename, images):
 # Saves map to database
 def save_database(entry_name, map_scale, filename, more_images, features, pois, test):
     # Get points with new file paths
-    points = setup_pois(pois)
+    points = setup_pois(pois, test)
 
     images = []
 
-    for p in points:
-        print('Points', p.name, p.position_x, p.position_x, p.images)
+    if test:
+        print('Saving map', entry_name, 'to database...')
 
     for img_filename in more_images:
+        if test:
+            print("Detecting features on additional images of the map.")
+
         # Run SIFT on map image
         results = runSIFT(img_filename, test)
 
@@ -156,7 +173,7 @@ def save_database(entry_name, map_scale, filename, more_images, features, pois, 
     image = Image(filename, features, points)
 
     images.append(image)
-    maps = update_database(entry_name, map_scale, filename, images)
+    maps = update_database(entry_name, map_scale, filename, images, test)
 
     # Save images to database
     binary_file = open(database_name, mode='wb')
@@ -165,7 +182,7 @@ def save_database(entry_name, map_scale, filename, more_images, features, pois, 
 
 
 # Copies each POI's images to the appropriate folder, then returns all POIs
-def setup_pois(pois):
+def setup_pois(pois, test):
     # Creates POIs directory
     if not os.path.exists(points_path):
         os.makedirs(points_path)
@@ -173,23 +190,24 @@ def setup_pois(pois):
     # Iterate over points of interest and get their new paths
     new_points = []
     for poi in pois:
-        new_points.append(copy_images(poi))
+        new_points.append(copy_images(poi, test))
 
-    print('Copied all POI images to new folder')
+    if test:
+        print('Copied all POI images to new folder')
 
     # Return updated points of interest
     return new_points
 
 
 # Parses images from a PointOfInterest object and copies them to a new folder
-def copy_images(poi):
+def copy_images(poi, test):
     # Get images attached to Point of Interest
     poi_images = poi.images
 
     # Iterate over images, copy them to new folder and get their path
     new_images = []
     for img in poi_images:
-        new_images.append(copy_file(img))
+        new_images.append(copy_file(img, test))
 
     # Update image paths in Point of Interest object
     poi.images = new_images
@@ -197,11 +215,12 @@ def copy_images(poi):
 
 
 # Copy image to Points of Interests folder
-def copy_file(filename):
+def copy_file(filename, test):
     img = filename
     try:
         img = shutil.copy(filename, points_path)
     except shutil.SameFileError:
-        print("Copying same file to folder")
+        if test:
+            print("Image already exists in POIs folder")
 
     return img

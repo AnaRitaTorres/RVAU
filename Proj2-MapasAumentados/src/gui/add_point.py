@@ -115,7 +115,13 @@ class AddPoint(QDialog):
             return info_box.exec()
 
         if self.test:
-            print('Saving point (x: {:d}, y: {:d})'.format(self.position_x, self.position_y))
+            print('Saving point of interest {} at (x: {:d}, y: {:d})'.format(self.name_edit.text(),
+                                                                             self.position_x, self.position_y))
+            print('Point of interest has the following images attached:')
+            for img in self.images:
+                print(img)
+
+            print('\n')
 
         self.valid = True
 

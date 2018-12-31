@@ -58,7 +58,10 @@ class DatabaseWindow(QMainWindow):
         self.resize(int(screen_size.width() * 4 / 5), int(screen_size.height() * 4 / 5))
 
         # Shows status bar message
-        self.statusBar().showMessage('Load an image')
+        self.statusBar().showMessage('Load frontal image of the map')
+
+        if self.test:
+            print('Waiting for user to upload a frontal image of the map')
 
     def toolbar_button(self, text: str, tooltip: str = None, shortcut: str = None) -> QtWidgets.QAction:
         # Creates action
@@ -102,7 +105,8 @@ class DatabaseWindow(QMainWindow):
         self.toolbar.addAction(self.more_action)
 
         # Save and Quit Option
-        self.save_action = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application', 'Ctrl+S')
+        self.save_action = self.toolbar_button('Save and Quit', 'Saves Points of Interest and Quits Application',
+                                               'Ctrl+S')
         self.save_action.setDisabled(True)
         self.save_action.triggered.connect(self.save_and_quit)
         self.toolbar.addAction(self.save_action)
@@ -119,12 +123,18 @@ class DatabaseWindow(QMainWindow):
             self.save_action.setDisabled(False)
             self.load_action.setDisabled(True)
 
+            if self.test:
+                print('Loaded frontal image of the map!\n')
+
     def load_image(self, filename):
         # Read original image
         img = cv2.imread(filename)
 
         # Run SIFT on map image
-        #results = runSIFT(filename, self.test)
+        # results = runSIFT(filename, self.test)
+
+        if self.test:
+            print('Detecting features of frontal image.')
 
         # Run ORB on map image
         results = runSIFT(filename, self.test)
@@ -174,6 +184,9 @@ class DatabaseWindow(QMainWindow):
 
             # Show message after loading image
             self.statusBar().showMessage('Added image successfully!')
+
+            if self.test:
+                print('Added additional image of the map!')
         else:
             # Show message if user canceled
             self.statusBar().showMessage('Canceled adding map image')
@@ -211,7 +224,6 @@ class DatabaseWindow(QMainWindow):
 
             map_scale, ok_scale = QInputDialog.getText(self, 'Saving Entry...', 'How many meters shown per 1cm? (int)')
 
-            
             if ok_scale:
                 if not (float(map_scale) or int(map_scale)):
                     # Show error if no points of interest were added
@@ -222,9 +234,9 @@ class DatabaseWindow(QMainWindow):
                     self.statusBar().showMessage('Error saving entry')
                     return info_box.exec()
 
-                print(entry_name, map_scale)
                 self.statusBar().showMessage('Saving entry to database')
-                save_database(entry_name, map_scale, self.map_name, self.image_filenames, self.features_info, self.pois, self.test)
+                save_database(entry_name, map_scale, self.map_name, self.image_filenames, self.features_info, self.pois,
+                              self.test)
 
                 # Quits Application
                 self.statusBar().showMessage('Quitting Application...')

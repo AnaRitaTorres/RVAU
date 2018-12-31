@@ -83,7 +83,11 @@ def matchFeatures(image, original_image, test):
     search_params = dict(checks=50)
 
     flann = cv2.FlannBasedMatcher(index_params, search_params)
-    matches = flann.knnMatch(descriptors_original, descriptors_image, k=2)
+
+    if len(keypoints_image) > 1 and len(or_arr['k']) > 1:
+        matches = flann.knnMatch(descriptors_original, descriptors_image, k=2)
+    else:
+        return {'img': image, 'pts': None, 'dst': None, 'angle': None, 'matrix': None}
 
     # Matches go here
     good = []

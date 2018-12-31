@@ -7,8 +7,7 @@ from core.video import *
 from core.matcher import *
 from core.database import *
 import time
-
-from cv2 import *
+import cv2
 
 
 # Window showing loaded image. Allows to see feature points and add points of interest
@@ -28,12 +27,16 @@ class MainWindow(QMainWindow):
         # Configure window title, dimension, etc.
         self.configure_window()
 
+        # Image index for points of interest
+        self.index = 0
+
         self.widget = QWidget()
         self.setCentralWidget(self.widget)
         self.show()
 
         if self.mode == 'video':
-            # self.statusBar().showMessage('Loading Webcam Feed...')
+            if self.test:
+                print('Loading Webcam Feed...')
             QTimer.singleShot(1, self.startVideo)
 
         # Add toolbar
@@ -43,28 +46,25 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
         cap = VideoCapture(0)
-        self.img = captureVideo(cap, self.original_image, self.test)
-        self.display_image(self.img)
+        results = captureVideo(cap, self.original_image, self.test)
+
+        self.display_image(results['img'], results['point'], results['distance'])
+
         while True:
             self.update()
             QApplication.processEvents()
-            self.img = captureVideo(cap, self.original_image, self.test)
-            self.update_image(self.img)
+            results = captureVideo(cap, self.original_image, self.test)
+            self.update_image(results['img'], results['point'], results['distance'])
             time.sleep(0.1)
         cap.release()
 
     def configure_window(self):
         # Sets window title
-        self.setWindowTitle('Display')
+        self.setWindowTitle('Augment map')
 
-        # Resizes window
-        screen_size = QtGui.QGuiApplication.primaryScreen().availableSize()
+        # Set window as maximized
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         self.setWindowState(Qt.WindowMaximized)
-        self.setFixedSize(self.size())
-
-        # Shows status bar message
-        # self.statusBar().showMessage('Ready')
 
     def toolbar_button(self, text: str, tooltip: str = None, shortcut: str = None) -> QtWidgets.QAction:
         # Creates action
@@ -88,6 +88,9 @@ class MainWindow(QMainWindow):
             self.open_action.triggered.connect(self.open_image)
             self.toolbar.addAction(self.open_action)
 
+            if self.test:
+                print('Waiting for user to upload a map image to augment...')
+
         # Quit Option
         quit_app = self.toolbar_button('Quit', 'Quits Application', 'Ctrl+S')
         quit_app.triggered.connect(self.quit_application)
@@ -100,22 +103,43 @@ class MainWindow(QMainWindow):
         if filename:
             # Read loaded image and display it
             img = cv2.imread(filename)
+
+            if self.test:
+                print('Matching features between original image of the map and current image')
+
             arr = matchFeatures(img, self.original_image, self.test)
             if arr['img'] is not None:
+                if self.test:
+                    print('Drawing center of image')
                 img = arr['img']
             if arr['angle'] is not None:
+                if self.test:
+                    print('Drawing compass on image')
                 img = draw_compass(img, arr['angle'])
             if arr['matrix'] is not None:
-                p_arr = get_pois(self.original_image.points,arr['matrix'])
+                if self.test:
+                    print('Drawing points of interest')
+                p_arr = get_pois(self.original_image.points, arr['matrix'])
                 img = draw_poi(img, p_arr)
-            self.display_image(img)
+
+            # TODO: this will be the closest point of interest!!! THIS is just an hardcoded example
+            point_of_interest = self.original_image.points[0]
+            distance = 150
+            # END TODO
+
+            self.display_image(img, point_of_interest, distance)
+
             self.open_action.setDisabled(True)
 
+            if self.test:
+                print('Loaded map image successfully!')
+
+    # Triggered when Quit option on the toolbar is selected
     def quit_application(self):
-        # self.statusBar().showMessage('Quitting Application...')
         self.close()
 
-    def display_image(self, img):
+    # Display image and closest point of interest for the first time
+    def display_image(self, img, point_of_interest, distance):
         # Get QImage Format depending on number of dimensions
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:
@@ -135,9 +159,9 @@ class MainWindow(QMainWindow):
 
         # Get pixmap
         pixmap = QtGui.QPixmap(q_image)
-        self.show_points(pixmap)
+        self.show_points(pixmap, point_of_interest, distance)
 
-    def update_image(self, img):
+    def update_image(self, img, point_of_interest, distance):
         # Get QImage Format depending on number of dimensions
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:
@@ -159,13 +183,33 @@ class MainWindow(QMainWindow):
         pixmap = QtGui.QPixmap(q_image)
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
-    def show_points(self, pixmap):
+        '''
+        # Update point of interest name
+        name = 'Name: {}'.format(point_of_interest.name)
+        self.name.setText(name)
+
+        # Update distance to point of interest
+        dist = 'Distance: {}'.format(distance)
+        self.distance.setText(dist)
+
+        # Update point of interest image
+        self.index = 0
+        image_point = point_of_interest.images[self.index]
+
+        pixmap_poi = QtGui.QPixmap(image_point)
+        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+        '''
+
+    def show_points(self, image, point_of_interest, distance):
+        # Set images array for point of interest
+        self.images_poi = point_of_interest.images
+
         widget = QWidget()
         self.setCentralWidget(widget)
 
         # Show main image while keeping aspect ratio
         self.main_image = QLabel()
-        self.main_image.setPixmap(pixmap.scaled(self.width(), self.height()-50, Qt.KeepAspectRatio))
+        self.main_image.setPixmap(image.scaled(self.width(), self.height()-50, Qt.KeepAspectRatio))
 
         # Set up main layout (show main image
         main_layout = QHBoxLayout(widget)
@@ -178,12 +222,17 @@ class MainWindow(QMainWindow):
         self.slideshow.setFixedSize(400, 375)
 
         # Set up point of interest's information (name, distance and image)
-        self.name = QLabel("Name: University of london")
-        self.distance = QLabel("Distance: 150m")
+        name = 'Name: {}'.format(point_of_interest.name)
+        self.name = QLabel(name)
+
+        dist = 'Distance: {}'.format(distance)
+        self.distance = QLabel(dist)
 
         self.image_poi = QLabel()
-        point_of_interest = self.original_image.points[0].images[0]
-        pixmap = QtGui.QPixmap(point_of_interest)
+        self.index = 0
+        image_point = point_of_interest.images[self.index]
+
+        pixmap = QtGui.QPixmap(image_point)
         self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
 
         # Set up previous and next buttons
