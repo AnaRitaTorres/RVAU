@@ -100,6 +100,9 @@ class MainWindow(QMainWindow):
             img = draw_poi(img)
             if arr['angle'] is not None:
                 img = draw_compass(img, arr['angle'])
+            if arr['matrix'] is not None:
+                print("HERE")
+                # TODO: Fazer aqui pontos de interesse
             self.editor_scene.display_image(img)
             self.open_action.setDisabled(True)
 

@@ -19,6 +19,9 @@ def captureVideo(cap, original_image, test):
     frame = draw_poi(frame)
     if arr['angle'] is not None:
         frame = draw_compass(frame, arr['angle'])
+    if arr['matrix'] is not None:
+        print("here")
+        # TODO: fazer aqui POIs
 
     # Resize image a bit
     height, width, depth = frame.shape

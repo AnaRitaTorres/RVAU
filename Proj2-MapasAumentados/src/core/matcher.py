@@ -105,16 +105,16 @@ def matchFeatures(image, original_image, test):
             # Redraw orignal image to show where the test image is
             image = polylines(image, [np.int32(dst)],True,255,3, LINE_AA)
 
-            return {'img': image, 'pts': pts, 'dst': dst, 'angle': calculateAngle(dst[1][0], dst[0][0])}
+            return {'img': image, 'pts': pts, 'dst': dst, 'angle': calculateAngle(dst[1][0], dst[0][0]), 'matrix': M}
         except:
-            return {'img':image, 'pts': None, 'dst': None, 'angle': None}
+            return {'img':image, 'pts': None, 'dst': None, 'angle': None, 'matrix': None}
     # Not enough good matches
     else:
         if test:
             print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
             matchesMask = None
 
-    return {'img':image, 'pts': None, 'dst': None, 'angle': None}
+    return {'img':image, 'pts': None, 'dst': None, 'angle': None, 'matrix': None}
 
 # Calculate the angle of the vector between two points
 def calculateAngle(pt1, pt2):
