@@ -11,18 +11,14 @@ def captureVideo(cap, original_image, test):
     # Read next frame 
     ret, frame = cap.read() 
  
-    # Draw Center
-    frame = draw_poi(frame)
     arr = matchFeatures(frame, original_image, test)
     if arr['img'] is not None:
         frame = arr['img']
-    frame = draw_poi(frame)
     if arr['angle'] is not None:
         frame = draw_compass(frame, arr['angle'])
     if arr['matrix'] is not None:
-        print("here")
-        # TODO: fazer aqui POIs
-
+        p_arr = get_pois(original_image.points,arr['matrix'])
+        frame = draw_poi(frame, p_arr)
     # Resize image a bit
     height, width, depth = frame.shape
     new_height = 1.2 * height

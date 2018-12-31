@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from math import hypot, pi, atan2, atan, cos, sin
 
 # Shows image or video with point of interest
-def draw_poi(image):
+def draw_poi(image, pois):
     h, w, d = image.shape
 
     # Get Image Center
@@ -13,6 +13,10 @@ def draw_poi(image):
 
     image = cv2.circle(image, center, 13, (0, 255, 255), -1)
     image = cv2.circle(image, center, 14, (0, 0, 0), 2)
+
+    for poi in pois:
+        center = (int(poi[0][0]), int(poi[0][1]))
+        image = cv2.circle(image, center, 7, (0, 255, 0), 2)
 
     return image
 
@@ -127,17 +131,25 @@ def calculateAngle(pt1, pt2):
     return -(theta -pi)
 
 # Calculate poi perpective
-def poi_perpective(x,y,M):
+def poi_perspective(pois, M):
 
-    pts = np.float32([ [0,0],[0,y-1],[x-1,y-1],[x-1,0] ]).reshape(-1,1,2)
+    arr = []
+    arr.append(pois)
+
+    pts = np.float32(arr).reshape(-1,1,2)
     dst = perspectiveTransform(pts,M)
 
-    print(M)
+    return dst
 
 # Get POIS
 def get_pois(pts,M):
+    pois = []
 
     for pt in pts:
-       poi_perpective(pt.position_x,pt.position_y,M)
+        pois.append([pt.position_x, pt.position_y])
+
+    new_pois = poi_perspective(pois, M)
+
+    return new_pois
 
     
