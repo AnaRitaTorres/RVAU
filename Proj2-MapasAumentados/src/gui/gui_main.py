@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QHBoxLayout, QVBoxLayout, QApplication, QPushButton, QListWidgetItem
-
+from PyQt5.QtWidgets import (QWidget, QLabel, QListWidget, QHBoxLayout, QVBoxLayout, QApplication,
+                             QPushButton, QListWidgetItem)
 from gui.select_feed import SelectFeed
 from gui.gui_database import *
 
@@ -133,6 +133,7 @@ class MainWindow(QMainWindow):
 
             # Shows new window to select between video and image
             dialog = SelectFeed(self.maps, item.text(), self.test)
+            dialog.closed_window.connect(self.on_widget_closed)
             self.setCentralWidget(dialog)
         else:
             print('No item selected')
@@ -149,3 +150,8 @@ class MainWindow(QMainWindow):
         self.fill_list()
         self.update()
         QApplication.processEvents()
+
+    # Triggered when selected feed is closed
+    def on_widget_closed(self):
+        self.close()
+
