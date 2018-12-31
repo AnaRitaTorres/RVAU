@@ -162,6 +162,8 @@ class MainWindow(QMainWindow):
         self.show_points(pixmap, point_of_interest, distance)
 
     def update_image(self, img, point_of_interest, distance):
+        self.point_of_interest = point_of_interest
+
         # Set images array for point of interest
         self.images_poi = point_of_interest.images
         
@@ -186,22 +188,32 @@ class MainWindow(QMainWindow):
         pixmap = QtGui.QPixmap(q_image)
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
-        # Update point of interest name
-        name = 'Name: {}'.format(point_of_interest.name)
-        self.name.setText(name)
+        if point_of_interest != self.point_of_interest:
+            # Update point of interest name
+            name = 'Name: {}'.format(point_of_interest.name)
+            self.name.setText(name)
 
-        # Update distance to point of interest
-        dist = 'Distance: {}'.format(distance)
-        self.distance.setText(dist)
+            # Update distance to point of interest
+            dist = 'Distance: {}'.format(distance)
+            self.distance.setText(dist)
 
-        # Update point of interest image
-        self.index = 0
-        image_point = point_of_interest.images[self.index]
+            # Update point of interest image
+            self.index = 0
+            image_point = point_of_interest.images[self.index]
 
-        pixmap_poi = QtGui.QPixmap(image_point)
-        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+            pixmap_poi = QtGui.QPixmap(image_point)
+            self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+
+            if len(self.images_poi) < 2:
+                self.prev.setDisabled(True)
+                self.next.setDisabled(True)
+            else:
+                self.prev.setDisabled(False)
+                self.next.setDisabled(False)
 
     def show_points(self, image, point_of_interest, distance):
+        self.point_of_interest = point_of_interest
+
         # Set images array for point of interest
         self.images_poi = point_of_interest.images
 
@@ -238,7 +250,13 @@ class MainWindow(QMainWindow):
 
         # Set up previous and next buttons
         self.prev = QPushButton("Previous")
+        self.prev.clicked.connect(self.on_prev_clicked)
         self.next = QPushButton("Next")
+        self.next.clicked.connect(self.on_next_clicked)
+
+        if len(self.images_poi) < 2:
+            self.prev.setDisabled(True)
+            self.next.setDisabled(True)
 
         # Show buttons in horizontal layout
         prev_next = QHBoxLayout()
@@ -260,6 +278,30 @@ class MainWindow(QMainWindow):
 
         self.update()
         QApplication.processEvents()
+
+    def on_prev_clicked(self):
+        last_index = len(self.point_of_interest.images) - 1
+
+        if self.index > 0:
+            self.index = self.index - 1
+        else:
+            self.index = last_index
+
+        image_point = self.point_of_interest.images[self.index]
+        pixmap_poi = QtGui.QPixmap(image_point)
+        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+
+    def on_next_clicked(self):
+        last_index = len(self.point_of_interest.images) - 1
+
+        if self.index < last_index:
+            self.index = self.index + 1
+        else:
+            self.index = 0
+
+        image_point = self.point_of_interest.images[self.index]
+        pixmap_poi = QtGui.QPixmap(image_point)
+        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
 
     # Triggered when window is closed
     def closeEvent(self, event):
