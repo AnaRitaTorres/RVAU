@@ -162,6 +162,9 @@ class MainWindow(QMainWindow):
         self.show_points(pixmap, point_of_interest, distance)
 
     def update_image(self, img, point_of_interest, distance):
+        # Set images array for point of interest
+        self.images_poi = point_of_interest.images
+        
         # Get QImage Format depending on number of dimensions
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:
@@ -183,7 +186,6 @@ class MainWindow(QMainWindow):
         pixmap = QtGui.QPixmap(q_image)
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
-        '''
         # Update point of interest name
         name = 'Name: {}'.format(point_of_interest.name)
         self.name.setText(name)
@@ -198,7 +200,6 @@ class MainWindow(QMainWindow):
 
         pixmap_poi = QtGui.QPixmap(image_point)
         self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
-        '''
 
     def show_points(self, image, point_of_interest, distance):
         # Set images array for point of interest
