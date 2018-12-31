@@ -97,7 +97,7 @@ def matchFeatures(image, original_image, test):
         h,w,depth = original_img.shape
 
         # Get new src and destination points
-        
+                
         try:
             pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
             dst = perspectiveTransform(pts,M)
@@ -126,22 +126,18 @@ def calculateAngle(pt1, pt2):
         theta += doublepi
     return -(theta -pi)
 
-# Calculates the linear distance between the 2 points
-def linear_distance(x1,y1,x2,y2):
+# Calculate poi perpective
+def poi_perpective(x,y,M):
 
-    #distance calculation
-    dist = math.hypot(x2 - x1, y2 - y1)
+    pts = np.float32([ [0,0],[0,y-1],[x-1,y-1],[x-1,0] ]).reshape(-1,1,2)
+    dst = perspectiveTransform(pts,M)
 
-    return dist
+    print(M)
 
-# Calculates distance to all interest points and returns the closest one
-def closest_POI(x1,y1,pois):
+# Get POIS
+def get_pois(pts,M):
 
-    all_dist = []
+    for pt in pts:
+       poi_perpective(pt.position_x,pt.position_y,M)
 
-    for poi in pois:
-        dist = linear_distance(x1,y1,poi[0],poi[1])
-        all_dist.append(dist)
-
-    # get min dist point coords
-        
+    

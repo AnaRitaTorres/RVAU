@@ -109,9 +109,8 @@ class MainWindow(QMainWindow):
 
             self.display_image(img)
             if arr['matrix'] is not None:
-                print("HERE")
+                 get_pois(self.original_image.points,arr['matrix'])
                 # TODO: Fazer aqui pontos de interesse
-            self.editor_scene.display_image(img)
             self.open_action.setDisabled(True)
 
     def quit_application(self):
