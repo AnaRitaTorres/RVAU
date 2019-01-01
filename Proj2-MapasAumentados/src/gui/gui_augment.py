@@ -191,16 +191,16 @@ class MainWindow(QMainWindow):
         pixmap = QtGui.QPixmap(q_image)
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
-        if point_of_interest != self.point_of_interest:
+        # Update distance to point of interest
+        dist = '<b>Distance:</b> {} m'.format(distance)
+        self.distance.setText(dist)
+
+        if point_of_interest.name != self.point_of_interest.name:
             self.point_of_interest = point_of_interest
 
             # Update point of interest name
-            name = 'Name: {}'.format(point_of_interest.name)
+            name = '<b>Name:</b> {}'.format(point_of_interest.name)
             self.name.setText(name)
-
-            # Update distance to point of interest
-            dist = 'Distance: {}m'.format(distance)
-            self.distance.setText(dist)
 
             # Update point of interest image
             self.index = 0
@@ -240,10 +240,10 @@ class MainWindow(QMainWindow):
         self.slideshow.setFixedSize(400, 375)
 
         # Set up point of interest's information (name, distance and image)
-        name = 'Name: {}'.format(point_of_interest.name)
+        name = '<b>Name:</b> {}'.format(point_of_interest.name)
         self.name = QLabel(name)
 
-        dist = 'Distance: {}m'.format(distance)
+        dist = '<b>Distance:</b> {} m'.format(distance)
         self.distance = QLabel(dist)
 
         self.image_poi = QLabel()
@@ -252,6 +252,7 @@ class MainWindow(QMainWindow):
 
         pixmap = QtGui.QPixmap(image_point)
         self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
+        self.image_poi.setFixedSize(380, 300)
 
         # Set up previous and next buttons
         self.prev = QPushButton("Previous")
