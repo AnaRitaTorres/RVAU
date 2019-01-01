@@ -1,12 +1,13 @@
 import cv2
-from core.utils import deserialize_features
 import numpy as np
 from matplotlib import pyplot as plt
 from math import hypot, pi, atan2, atan, cos, sin
+from core.utils import deserialize_features
+from core.database import PointOfInterest
 
 
 # Shows image or video frame with highlighted point of interest and center
-def draw_poi(image, pois):
+def draw_poi(image, pois, scale):
     h, w, d = image.shape
 
     # Get Image Center
@@ -14,13 +15,17 @@ def draw_poi(image, pois):
     thickness = min(int(w/60), int(h/60))
 
     image = cv2.circle(image, center, thickness, (0, 255, 255), -1)
-    image = cv2.circle(image, center, thickness+1, (0, 0, 0), 2)
+    image = cv2.circle(image, center, thickness + 1, (0, 0, 0), 2)
 
-    for poi in pois:
-        center = (int(poi[0][0]), int(poi[0][1]))
-        image = cv2.circle(image, center, 7, (0, 255, 0), 2)
+    result = closest_POI(center[0], center[1], pois)
+    point_of_interest = result['point']
+    distance = int(result['distance'])
+    # TODO: Convert distance from pixels to meters?
 
-    return image
+    center = (point_of_interest.position_x, point_of_interest.position_y)
+    image = cv2.circle(image, center, 8, (0, 255, 0), -1)
+
+    return {'img': image, 'point': point_of_interest, 'distance': distance}
 
 
 # Draw compass on image or video frame
@@ -54,7 +59,7 @@ def draw_compass(image, angle):
 
 
 # Find SIFT features in image and compare them to original image's features
-def matchFeatures(image, original_image, test):
+def matchFeatures(mode, image, original_image, test):
 
     MIN_MATCH_COUNT = 10
 
@@ -66,7 +71,11 @@ def matchFeatures(image, original_image, test):
     grayscaled_original = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
 
     # Run SIFT on image, get original's
-    sift = cv2.xfeatures2d.SIFT_create(250)
+    if mode == 'image':
+        sift = cv2.xfeatures2d.SIFT_create(2000)
+    else:
+        sift = cv2.xfeatures2d.SIFT_create(250)
+
     keypoints_image, descriptors_image = sift.detectAndCompute(grayscaled_image, None)
     or_arr = deserialize_features(original_image.features)
 
@@ -158,11 +167,43 @@ def poi_perspective(pois, M):
 
 # Get points of interest
 def get_pois(pts, M):
+    points = []
     pois = []
 
     for pt in pts:
-        pois.append([pt.position_x, pt.position_y])
+        points.append([pt.position_x, pt.position_y])
 
-    new_pois = poi_perspective(pois, M)
+    new_points = poi_perspective(points, M)
 
-    return new_pois
+    for pt, poi in zip(new_points, pts):
+        point = PointOfInterest(int(pt[0][0]), int(pt[0][1]), poi.name, poi.images)
+        pois.append(point)
+
+    return pois
+
+
+# Calculates the linear distance between the 2 points
+def linear_distance(x1, y1, x2, y2):
+
+    # Distance calculation
+    dist = hypot(x2 - x1, y2 - y1)
+
+    return dist
+
+
+# Calculates distance to all interest points and returns the closest one
+def closest_POI(x1, y1, pois):
+
+    all_dist = []
+
+    for poi in pois:
+        dist = linear_distance(x1, y1, poi.position_x, poi.position_y)
+        all_dist.append({'point': poi, 'dist': dist})
+
+    # get min dist point coords
+    result = min(all_dist, key=lambda x: x['dist'])
+
+    # print(result['point'].name, result['dist'])
+
+    return {'point': result['point'], 'distance': result['dist']}
+

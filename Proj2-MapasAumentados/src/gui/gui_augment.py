@@ -21,6 +21,9 @@ class MainWindow(QMainWindow):
         # Get base image
         self.original_image = get_base_image(original_map)
 
+        # Get map scale
+        self.scale = original_map.scale
+
         # Check mode
         self.mode = mode
 
@@ -46,14 +49,14 @@ class MainWindow(QMainWindow):
 
     def startVideo(self):
         cap = VideoCapture(0)
-        results = captureVideo(cap, self.original_image, self.test)
+        results = captureVideo(cap, self.mode, self.original_image, self.scale, self.test)
 
         self.display_image(results['img'], results['point'], results['distance'])
 
         while True:
             self.update()
             QApplication.processEvents()
-            results = captureVideo(cap, self.original_image, self.test)
+            results = captureVideo(cap, self.mode, self.original_image, self.scale, self.test)
             self.update_image(results['img'], results['point'], results['distance'])
             time.sleep(0.1)
         cap.release()
@@ -107,7 +110,11 @@ class MainWindow(QMainWindow):
             if self.test:
                 print('Matching features between original image of the map and current image')
 
-            arr = matchFeatures(img, self.original_image, self.test)
+            arr = matchFeatures(self.mode, img, self.original_image, self.test)
+
+            point_of_interest = self.original_image.points[0]
+            distance = 0
+
             if arr['img'] is not None:
                 if self.test:
                     print('Drawing center of image')
@@ -120,15 +127,13 @@ class MainWindow(QMainWindow):
                 if self.test:
                     print('Drawing points of interest')
                 p_arr = get_pois(self.original_image.points, arr['matrix'])
-                img = draw_poi(img, p_arr)
+                results = draw_poi(img, p_arr, self.scale)
 
-            # TODO: this will be the closest point of interest!!! THIS is just an hardcoded example
-            point_of_interest = self.original_image.points[0]
-            distance = 150
-            # END TODO
+                img = results['img']
+                point_of_interest = results['point']
+                distance = results['distance']
 
             self.display_image(img, point_of_interest, distance)
-
             self.open_action.setDisabled(True)
 
             if self.test:
@@ -162,8 +167,6 @@ class MainWindow(QMainWindow):
         self.show_points(pixmap, point_of_interest, distance)
 
     def update_image(self, img, point_of_interest, distance):
-        self.point_of_interest = point_of_interest
-
         # Set images array for point of interest
         self.images_poi = point_of_interest.images
         
@@ -189,12 +192,14 @@ class MainWindow(QMainWindow):
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
         if point_of_interest != self.point_of_interest:
+            self.point_of_interest = point_of_interest
+
             # Update point of interest name
             name = 'Name: {}'.format(point_of_interest.name)
             self.name.setText(name)
 
             # Update distance to point of interest
-            dist = 'Distance: {}'.format(distance)
+            dist = 'Distance: {}m'.format(distance)
             self.distance.setText(dist)
 
             # Update point of interest image
@@ -238,7 +243,7 @@ class MainWindow(QMainWindow):
         name = 'Name: {}'.format(point_of_interest.name)
         self.name = QLabel(name)
 
-        dist = 'Distance: {}'.format(distance)
+        dist = 'Distance: {}m'.format(distance)
         self.distance = QLabel(dist)
 
         self.image_poi = QLabel()
