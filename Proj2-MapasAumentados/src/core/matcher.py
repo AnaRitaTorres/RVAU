@@ -19,11 +19,17 @@ def draw_poi(image, pois, scale):
 
     result = closest_POI(center[0], center[1], pois)
     point_of_interest = result['point']
-    distance = int(result['distance'])
+    pixels = int(result['distance'])
+
+    # Is this the right way to convert pixels to centimeters?
+    centimeters = pixels * 2.54 / 96
+    scale = float(scale)
+    distance = int(centimeters * scale)
     # TODO: Convert distance from pixels to meters?
 
     center = (point_of_interest.position_x, point_of_interest.position_y)
     image = cv2.circle(image, center, 8, (0, 255, 0), -1)
+    image = cv2.circle(image, center, 9, (0, 0, 0), 2)
 
     return {'img': image, 'point': point_of_interest, 'distance': distance}
 
