@@ -61,7 +61,10 @@ def draw_compass(image, angle):
 # Find SIFT features in image and compare them to original image's features
 def matchFeatures(mode, image, original_image, test):
 
-    MIN_MATCH_COUNT = 10
+    if mode == 'image':
+        MIN_MATCH_COUNT = 100
+    else:
+        MIN_MATCH_COUNT = 10
 
     # Read original image
     original_img = cv2.imread(original_image.filename)

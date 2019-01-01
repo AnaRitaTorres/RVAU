@@ -13,7 +13,7 @@ def captureVideo(cap, mode, original_image, scale, test):
  
     arr = matchFeatures(mode, frame, original_image, test)
 
-    point_of_interest = original_image.points[0]
+    point_of_interest = None
     distance = 0
 
     if arr['img'] is not None:

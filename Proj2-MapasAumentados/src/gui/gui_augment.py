@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
 
             arr = matchFeatures(self.mode, img, self.original_image, self.test)
 
-            point_of_interest = self.original_image.points[0]
+            point_of_interest = None
             distance = 0
 
             if arr['img'] is not None:
@@ -167,9 +167,6 @@ class MainWindow(QMainWindow):
         self.show_points(pixmap, point_of_interest, distance)
 
     def update_image(self, img, point_of_interest, distance):
-        # Set images array for point of interest
-        self.images_poi = point_of_interest.images
-        
         # Get QImage Format depending on number of dimensions
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:
@@ -191,36 +188,47 @@ class MainWindow(QMainWindow):
         pixmap = QtGui.QPixmap(q_image)
         self.main_image.setPixmap(pixmap.scaled(self.width(), self.height() - 50, Qt.KeepAspectRatio))
 
-        # Update distance to point of interest
-        dist = '<b>Distance:</b> {} m'.format(distance)
-        self.distance.setText(dist)
+        if point_of_interest is None:
+            self.slideshow.hide()
+        else:
+            self.slideshow.show()
 
-        if point_of_interest.name != self.point_of_interest.name:
-            self.point_of_interest = point_of_interest
+            # Set images array for point of interest
+            self.images_poi = point_of_interest.images
 
-            # Update point of interest name
-            name = '<b>Name:</b> {}'.format(point_of_interest.name)
-            self.name.setText(name)
+            # Update distance to point of interest
+            dist = '<b>Distance:</b> {} m'.format(distance)
+            self.distance.setText(dist)
 
-            # Update point of interest image
-            self.index = 0
-            image_point = point_of_interest.images[self.index]
-
-            pixmap_poi = QtGui.QPixmap(image_point)
-            self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
-
-            if len(self.images_poi) < 2:
-                self.prev.setDisabled(True)
-                self.next.setDisabled(True)
+            if self.point_of_interest is None:
+                self.update_poi(point_of_interest)
             else:
-                self.prev.setDisabled(False)
-                self.next.setDisabled(False)
+                if self.point_of_interest.name != point_of_interest.name:
+                    self.update_poi(point_of_interest)
+
+    def update_poi(self, point_of_interest):
+        self.point_of_interest = point_of_interest
+
+        # Update point of interest name
+        name = '<b>Name:</b> {}'.format(point_of_interest.name)
+        self.name.setText(name)
+
+        # Update point of interest image
+        self.index = 0
+        image_point = point_of_interest.images[self.index]
+
+        pixmap_poi = QtGui.QPixmap(image_point)
+        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+
+        if len(self.images_poi) < 2:
+            self.prev.setDisabled(True)
+            self.next.setDisabled(True)
+        else:
+            self.prev.setDisabled(False)
+            self.next.setDisabled(False)
 
     def show_points(self, image, point_of_interest, distance):
         self.point_of_interest = point_of_interest
-
-        # Set images array for point of interest
-        self.images_poi = point_of_interest.images
 
         widget = QWidget()
         self.setCentralWidget(widget)
@@ -240,19 +248,28 @@ class MainWindow(QMainWindow):
         self.slideshow.setFixedSize(400, 375)
 
         # Set up point of interest's information (name, distance and image)
-        name = '<b>Name:</b> {}'.format(point_of_interest.name)
-        self.name = QLabel(name)
+        if point_of_interest is not None:
+            name = '<b>Name:</b> {}'.format(point_of_interest.name)
+            dist = '<b>Distance:</b> {} m'.format(distance)
 
-        dist = '<b>Distance:</b> {} m'.format(distance)
+            # Set images array for point of interest
+            self.images_poi = point_of_interest.images
+        else:
+            name = ""
+            dist = ""
+            self.images_poi = []
+
+        self.name = QLabel(name)
         self.distance = QLabel(dist)
 
         self.image_poi = QLabel()
         self.index = 0
-        image_point = point_of_interest.images[self.index]
-
-        pixmap = QtGui.QPixmap(image_point)
-        self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
         self.image_poi.setFixedSize(380, 300)
+
+        if self.point_of_interest is not None:
+            image_point = point_of_interest.images[self.index]
+            pixmap = QtGui.QPixmap(image_point)
+            self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
 
         # Set up previous and next buttons
         self.prev = QPushButton("Previous")
@@ -260,7 +277,7 @@ class MainWindow(QMainWindow):
         self.next = QPushButton("Next")
         self.next.clicked.connect(self.on_next_clicked)
 
-        if len(self.images_poi) < 2:
+        if len(self.images_poi) < 2 or point_of_interest is None:
             self.prev.setDisabled(True)
             self.next.setDisabled(True)
 
@@ -281,6 +298,9 @@ class MainWindow(QMainWindow):
         # Move widget to top corner of the screen
         slideshow_position = self.geometry().topRight() - self.slideshow.geometry().topRight()
         self.slideshow.move(slideshow_position)
+
+        if point_of_interest is None:
+            self.slideshow.hide()
 
         self.update()
         QApplication.processEvents()
