@@ -9,6 +9,8 @@ from core.database import *
 import time
 import cv2
 
+poi_image_size = (380, 280)
+
 
 # Window showing loaded image. Allows to see feature points and add points of interest
 class MainWindow(QMainWindow):
@@ -32,6 +34,9 @@ class MainWindow(QMainWindow):
 
         # Image index for points of interest
         self.index = 0
+
+        # Point of interest
+        self.point_of_interest = None
 
         self.widget = QWidget()
         self.setCentralWidget(self.widget)
@@ -133,8 +138,11 @@ class MainWindow(QMainWindow):
                 point_of_interest = results['point']
                 distance = results['distance']
 
-            self.display_image(img, point_of_interest, distance)
-            self.open_action.setDisabled(True)
+            if self.point_of_interest is None:
+                self.display_image(img, point_of_interest, distance)
+            else:
+                self.update_image(img, point_of_interest, distance)
+            # self.open_action.setDisabled(True)
 
             if self.test:
                 print('Loaded map image successfully!')
@@ -195,6 +203,14 @@ class MainWindow(QMainWindow):
         if point_of_interest is None:
             # Hide slideshow if true
             self.slideshow.hide()
+
+            if self.mode == 'image':
+                # Show error if no points of interest were added
+                info_box = QtWidgets.QMessageBox(self)
+                info_box.setWindowTitle("Point of Interest")
+                info_box.setIcon(QtWidgets.QMessageBox.Warning)
+                info_box.setText("No point of interest found!")
+                return info_box.exec()
         else:
             # Show slideshow if not
             self.slideshow.show()
@@ -228,7 +244,7 @@ class MainWindow(QMainWindow):
         image_point = point_of_interest.images[self.index]
 
         pixmap_poi = QtGui.QPixmap(image_point)
-        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+        self.image_poi.setPixmap(pixmap_poi.scaled(poi_image_size[0], poi_image_size[1], Qt.KeepAspectRatio))
 
         # Set previous and next buttons to disabled or not depending on number of images
         if len(self.images_poi) < 2:
@@ -277,13 +293,13 @@ class MainWindow(QMainWindow):
 
         self.image_poi = QLabel()
         self.index = 0
-        self.image_poi.setFixedSize(380, 300)
+        self.image_poi.setFixedSize(poi_image_size[0], poi_image_size[1])
 
         # Show point of interest images if it exists
         if self.point_of_interest is not None:
             image_point = point_of_interest.images[self.index]
             pixmap = QtGui.QPixmap(image_point)
-            self.image_poi.setPixmap(pixmap.scaled(380, 300, Qt.KeepAspectRatio))
+            self.image_poi.setPixmap(pixmap.scaled(poi_image_size[0], poi_image_size[1], Qt.KeepAspectRatio))
 
         # Set up previous and next buttons
         self.prev = QPushButton("Previous")
@@ -317,6 +333,14 @@ class MainWindow(QMainWindow):
         if point_of_interest is None:
             self.slideshow.hide()
 
+            if self.mode == 'image':
+                # Show error if no points of interest were added
+                info_box = QtWidgets.QMessageBox(self)
+                info_box.setWindowTitle("Point of Interest")
+                info_box.setIcon(QtWidgets.QMessageBox.Warning)
+                info_box.setText("No point of interest found!")
+                return info_box.exec()
+
         self.update()
         QApplication.processEvents()
 
@@ -331,7 +355,7 @@ class MainWindow(QMainWindow):
 
         image_point = self.point_of_interest.images[self.index]
         pixmap_poi = QtGui.QPixmap(image_point)
-        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+        self.image_poi.setPixmap(pixmap_poi.scaled(poi_image_size[0], poi_image_size[1], Qt.KeepAspectRatio))
 
     # Triggered when next button is clicked
     def on_next_clicked(self):
@@ -344,7 +368,7 @@ class MainWindow(QMainWindow):
 
         image_point = self.point_of_interest.images[self.index]
         pixmap_poi = QtGui.QPixmap(image_point)
-        self.image_poi.setPixmap(pixmap_poi.scaled(380, 300, Qt.KeepAspectRatio))
+        self.image_poi.setPixmap(pixmap_poi.scaled(poi_image_size[0], poi_image_size[1], Qt.KeepAspectRatio))
 
     # Triggered when window is closed
     def closeEvent(self, event):

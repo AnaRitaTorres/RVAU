@@ -18,18 +18,23 @@ def draw_poi(image, pois, scale):
     image = cv2.circle(image, center, thickness + 1, (0, 0, 0), 2)
 
     result = closest_POI(center[0], center[1], pois)
-    point_of_interest = result['point']
-    pixels = int(result['distance'])
 
-    # Is this the right way to convert pixels to centimeters?
-    centimeters = pixels * 2.54 / 96
-    scale = float(scale)
-    distance = int(centimeters * scale)
-    # TODO: Convert distance from pixels to meters?
+    if result['point'] is None:
+        point_of_interest = None
+        distance = 0
+    else:
+        point_of_interest = result['point']
+        pixels = int(result['distance'])
 
-    center = (point_of_interest.position_x, point_of_interest.position_y)
-    image = cv2.circle(image, center, 8, (0, 255, 0), -1)
-    image = cv2.circle(image, center, 9, (0, 0, 0), 2)
+        # Is this the right way to convert pixels to centimeters?
+        centimeters = pixels * 2.54 / 96
+        scale = float(scale)
+        distance = int(centimeters * scale)
+        # TODO: Convert distance from pixels to meters?
+
+        center = (point_of_interest.position_x, point_of_interest.position_y)
+        image = cv2.circle(image, center, 8, (0, 255, 0), -1)
+        image = cv2.circle(image, center, 9, (0, 0, 0), 2)
 
     return {'img': image, 'point': point_of_interest, 'distance': distance}
 
@@ -185,8 +190,11 @@ def get_pois(pts, M):
     new_points = poi_perspective(points, M)
 
     for pt, poi in zip(new_points, pts):
-        point = PointOfInterest(int(pt[0][0]), int(pt[0][1]), poi.name, poi.images)
-        pois.append(point)
+        position_x = int(pt[0][0])
+        position_y = int(pt[0][1])
+        if position_y > 0 and position_y > 0:
+            point = PointOfInterest(position_x, position_y, poi.name, poi.images)
+            pois.append(point)
 
     return pois
 
@@ -202,17 +210,17 @@ def linear_distance(x1, y1, x2, y2):
 
 # Calculates distance to all interest points and returns the closest one
 def closest_POI(x1, y1, pois):
+    if len(pois) > 0:
+        all_dist = []
 
-    all_dist = []
+        for poi in pois:
+            dist = linear_distance(x1, y1, poi.position_x, poi.position_y)
+            all_dist.append({'point': poi, 'dist': dist})
 
-    for poi in pois:
-        dist = linear_distance(x1, y1, poi.position_x, poi.position_y)
-        all_dist.append({'point': poi, 'dist': dist})
-
-    # get min dist point coords
-    result = min(all_dist, key=lambda x: x['dist'])
-
-    # print(result['point'].name, result['dist'])
+        # get min dist point coords
+        result = min(all_dist, key=lambda x: x['dist'])
+    else:
+        result = {'point': None, 'dist': 0}
 
     return {'point': result['point'], 'distance': result['dist']}
 
