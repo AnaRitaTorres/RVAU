@@ -12,7 +12,7 @@ def draw_poi(image, pois, scale):
 
     # Get Image Center
     center = (int(w/2), int(h/2))
-    thickness = min(int(w/60), int(h/60))
+    thickness = min(int(w/85), int(h/85))
 
     image = cv2.circle(image, center, thickness, (0, 255, 255), -1)
     image = cv2.circle(image, center, thickness + 1, (0, 0, 0), 2)
@@ -26,15 +26,14 @@ def draw_poi(image, pois, scale):
         point_of_interest = result['point']
         pixels = int(result['distance'])
 
-        # Is this the right way to convert pixels to centimeters?
+        # Convert pixels to centimeters
         centimeters = pixels * 2.54 / 96
         scale = float(scale)
         distance = int(centimeters * scale)
-        # TODO: Convert distance from pixels to meters?
 
         center = (point_of_interest.position_x, point_of_interest.position_y)
-        image = cv2.circle(image, center, 8, (0, 255, 0), -1)
-        image = cv2.circle(image, center, 9, (0, 0, 0), 2)
+        image = cv2.circle(image, center, thickness+2, (0, 255, 0), -1)
+        image = cv2.circle(image, center, thickness+3, (0, 0, 0), 2)
 
     return {'img': image, 'point': point_of_interest, 'distance': distance}
 
@@ -180,9 +179,11 @@ def poi_perspective(pois, M):
 
 
 # Get points of interest
-def get_pois(pts, M):
+def get_pois(img, pts, M):
     points = []
     pois = []
+
+    h, w, d = img.shape
 
     for pt in pts:
         points.append([pt.position_x, pt.position_y])
@@ -192,9 +193,11 @@ def get_pois(pts, M):
     for pt, poi in zip(new_points, pts):
         position_x = int(pt[0][0])
         position_y = int(pt[0][1])
+
         if position_y > 0 and position_y > 0:
-            point = PointOfInterest(position_x, position_y, poi.name, poi.images)
-            pois.append(point)
+            if position_x < w and position_y < h:
+                point = PointOfInterest(position_x, position_y, poi.name, poi.images)
+                pois.append(point)
 
     return pois
 

@@ -21,7 +21,7 @@ def captureVideo(cap, mode, original_image, scale, test):
     if arr['angle'] is not None:
         frame = draw_compass(frame, arr['angle'])
     if arr['matrix'] is not None:
-        p_arr = get_pois(original_image.points, arr['matrix'])
+        p_arr = get_pois(frame, original_image.points, arr['matrix'])
         results = draw_poi(frame, p_arr, scale)
 
         frame = results['img']

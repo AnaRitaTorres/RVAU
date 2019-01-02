@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
             if arr['matrix'] is not None:
                 if self.test:
                     print('Drawing points of interest')
-                p_arr = get_pois(self.original_image.points, arr['matrix'])
+                p_arr = get_pois(img, self.original_image.points, arr['matrix'])
                 results = draw_poi(img, p_arr, self.scale)
 
                 img = results['img']
