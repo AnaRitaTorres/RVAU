@@ -12,7 +12,7 @@ def draw_poi(image, pois, scale):
 
     # Get Image Center
     center = (int(w/2), int(h/2))
-    thickness = min(int(w/85), int(h/85))
+    thickness = min(int(w/75), int(h/75))
 
     image = cv2.circle(image, center, thickness, (0, 255, 255), -1)
     image = cv2.circle(image, center, thickness + 1, (0, 0, 0), 2)
@@ -194,7 +194,7 @@ def get_pois(img, pts, M):
         position_x = int(pt[0][0])
         position_y = int(pt[0][1])
 
-        if position_y > 0 and position_y > 0:
+        if position_x > 0 and position_y > 0:
             if position_x < w and position_y < h:
                 point = PointOfInterest(position_x, position_y, poi.name, poi.images)
                 pois.append(point)
