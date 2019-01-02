@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from math import hypot, pi, atan2, atan, cos, sin
 from core.utils import deserialize_features
 from core.database import PointOfInterest
+from core.calibration import *
 
 
 # Shows image or video frame with highlighted point of interest and center
@@ -35,6 +36,18 @@ def draw_poi(image, pois, scale):
         center = (point_of_interest.position_x, point_of_interest.position_y)
         image = cv2.circle(image, center, 8, (0, 255, 0), -1)
         image = cv2.circle(image, center, 9, (0, 0, 0), 2)
+        
+        #pyramid = result['pyramid_points']
+        #vertex0 = (int(pyramid[0][0][0]), int(pyramid[0][0][1]))
+        #vertex1 = (int(pyramid[1][0][0]), int(pyramid[1][0][1]))
+        #vertex2 = (int(pyramid[2][0][0]), int(pyramid[2][0][1]))
+        #vertex3 = (int(pyramid[3][0][0]), int(pyramid[3][0][1]))
+        #vertex4 = (point_of_interest.position_x, point_of_interest.position_y)
+
+        #image = cv2.line(image, vertex0, vertex1, (0,255,0), 2, 8, 0)
+        #image = cv2.line(image, vertex1, vertex3, (0,255,0), 2, 8, 0)
+        #image = cv2.line(image, vertex3, vertex2, (0,255,0), 2, 8, 0)
+        #image = cv2.line(image, vertex2, vertex0, (0,255,0), 2, 8, 0)
 
     return {'img': image, 'point': point_of_interest, 'distance': distance}
 
@@ -159,9 +172,7 @@ def matchFeatures(mode, image, original_image, test):
 
 # Calculate the angle of the vector between two points
 def calculateAngle(pt1, pt2):
-    doublepi = pi * 2
-    rad2deg = 57.2957795130823209
-    
+    doublepi = pi * 2    
     theta = atan2(pt2[0] - pt1[0], pt2[1] - pt1[1])
     if theta < 0.0:
         theta += doublepi
@@ -178,23 +189,32 @@ def poi_perspective(pois, M):
 
     return dst
 
-
 # Get points of interest
 def get_pois(pts, M):
     points = []
+    pyr_points = []
     pois = []
 
     for pt in pts:
         points.append([pt.position_x, pt.position_y])
+        pyr_points.append(  [[pt.position_x-20, pt.position_y-20],
+                            [pt.position_x+20, pt.position_y-20],
+                            [pt.position_x-20, pt.position_y+20],
+                            [pt.position_x+20, pt.position_y+20]])
 
     new_points = poi_perspective(points, M)
+    new_pyr_points = []
 
-    for pt, poi in zip(new_points, pts):
+    for i in pyr_points:
+        new_pyr_points.append(poi_perspective(i, M))
+
+    for pt, poi, pyr in zip(new_points, pts, new_pyr_points):
         position_x = int(pt[0][0])
         position_y = int(pt[0][1])
         if position_y > 0 and position_y > 0:
             point = PointOfInterest(position_x, position_y, poi.name, poi.images)
-            pois.append(point)
+            pp = {'point':point, 'pyr':pyr}
+            pois.append(pp)
 
     return pois
 
@@ -210,17 +230,22 @@ def linear_distance(x1, y1, x2, y2):
 
 # Calculates distance to all interest points and returns the closest one
 def closest_POI(x1, y1, pois):
-    if len(pois) > 0:
+    points = []
+    pyrs = []
+    for p in pois:
+        points.append(p['point'])
+        pyrs.append(p['pyr'])
+    if len(points) > 0:
         all_dist = []
 
-        for poi in pois:
+        for poi, pyr in zip(points, pyrs):
             dist = linear_distance(x1, y1, poi.position_x, poi.position_y)
-            all_dist.append({'point': poi, 'dist': dist})
+            all_dist.append({'point': poi, 'dist': dist, 'pyr':pyr})
 
         # get min dist point coords
         result = min(all_dist, key=lambda x: x['dist'])
     else:
-        result = {'point': None, 'dist': 0}
+        result = {'point': None, 'dist': 0, 'pyr': None}
 
-    return {'point': result['point'], 'distance': result['dist']}
+    return {'point': result['point'], 'distance': result['dist'], 'pyramid_points': result['pyr']}
 

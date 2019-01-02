@@ -14,7 +14,7 @@ poi_image_size = (380, 280)
 
 # Window showing loaded image. Allows to see feature points and add points of interest
 class MainWindow(QMainWindow):
-    def __init__(self, mode, original_map, test):
+    def __init__(self, mode, original_map, props, test):
         QMainWindow.__init__(self)
 
         # Test mode active
@@ -28,6 +28,8 @@ class MainWindow(QMainWindow):
 
         # Check mode
         self.mode = mode
+
+        self.props = props
 
         # Configure window title, dimension, etc.
         self.configure_window()

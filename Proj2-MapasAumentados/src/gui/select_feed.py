@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import *
 
 from gui.gui_augment import MainWindow
+from gui.gui_calibrate import Calibration
 from core.database import *
 
 dialogs = []
@@ -46,7 +47,7 @@ class SelectFeed(QWidget):
     # Triggered when image button is clicked
     def init_image(self):
         map_entry = get_map(self.item, self.maps)
-        window = MainWindow('image', map_entry, self.test)
+        window = MainWindow('image', map_entry, None, self.test)
         dialogs.append(window)
         window.show()
         self.closed_window.emit()
@@ -55,7 +56,7 @@ class SelectFeed(QWidget):
     # Triggered when video button is clicked
     def init_video(self):
         map_entry = get_map(self.item, self.maps)
-        window = MainWindow('video', map_entry, self.test)
+        window = Calibration('video', map_entry, self.test)
         dialogs.append(window)
         window.show()
         self.closed_window.emit()
